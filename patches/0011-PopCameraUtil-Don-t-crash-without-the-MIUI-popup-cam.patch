@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Debayan Kar <kardebayan3@gmail.com>
+Date: Sun, 25 Oct 2026 16:06:57 +0000
+Subject: [PATCH 11/12] PopCameraUtil: Don't crash without the MIUI popup
+ camera service
+
+On davinci the app asks the MIUI "popupcamera" system service to pop
+the front camera up and down around opening it. AOSP has no such
+service, so the binder is null and the calls throw a
+NullPointerException when switching to or away from the front camera.
+
+Return the default results instead, the motor is driven by
+PopupCameraService of the device tree on camera availability.
+---
+ .../lib/compatibility/related/popcamera/PopCameraUtil.smali | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/smali/com/android/camera/lib/compatibility/related/popcamera/PopCameraUtil.smali b/smali/com/android/camera/lib/compatibility/related/popcamera/PopCameraUtil.smali
+index 214bd113..c8124186 100644
+--- a/smali/com/android/camera/lib/compatibility/related/popcamera/PopCameraUtil.smali
++++ b/smali/com/android/camera/lib/compatibility/related/popcamera/PopCameraUtil.smali
+@@ -34,6 +34,8 @@
+ 
+     move-result-object v2
+ 
++    if-eqz v2, :goto_0
++
+     const-string v3, "getMotorStatus: E..."
+ 
+     invoke-static {v0, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+@@ -79,6 +81,8 @@
+ 
+     move-result-object v2
+ 
++    if-eqz v2, :goto_0
++
+     const-string v3, "popupMotor: E..."
+ 
+     invoke-static {v0, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+@@ -124,6 +128,8 @@
+ 
+     move-result-object v2
+ 
++    if-eqz v2, :goto_0
++
+     const-string/jumbo v3, "takebackMotor: E..."
+ 
+     invoke-static {v0, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+-- 
+2.43.0
+

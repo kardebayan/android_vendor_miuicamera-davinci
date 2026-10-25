@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Debayan Kar <kardebayan3@gmail.com>
+Date: Sun, 25 Oct 2026 16:05:28 +0000
+Subject: [PATCH 09/12] Don't require cloud-common.jar
+
+It's MIUI's cloud backup runtime, used only by the MIUI cloud settings
+backup classes which can't run on AOSP. PackageManager refuses to scan
+a package that requires a missing shared library, and Soong rejects a
+prebuilt app whose <uses-library> tags it doesn't know about.
+---
+ AndroidManifest.xml | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/AndroidManifest.xml b/AndroidManifest.xml
+index 0f9f8318..e03b887b 100644
+--- a/AndroidManifest.xml
++++ b/AndroidManifest.xml
+@@ -65,7 +65,6 @@
+         <meta-data android:name="maxBackup" android:value="10"/>
+         <meta-data android:name="maxFileMbSize" android:value="2"/>
+         <meta-data android:name="android.max_aspect" android:value="2.3"/>
+-        <uses-library android:name="cloud-common.jar"/>
+         <service android:exported="false" android:name="com.android.camera.snap.SnapService"/>
+         <service android:name="com.android.camera.statistic.SettingUploadJobService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+         <receiver android:name="com.android.camera.snap.SnapKeyReceiver" android:permission="com.xiaomi.camera.AUX_CONTROL">
+-- 
+2.43.0
+

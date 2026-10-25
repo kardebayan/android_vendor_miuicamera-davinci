@@ -4,13 +4,16 @@
 
 soong_namespace {
     imports: [
-        "vendor/miuicamera-sweet",
+        "hardware/qcom-caf/sm8150",
+        "vendor/qcom/opensource/display",
+        "vendor/xiaomi/davinci",
+        "vendor/xiaomi/sm6150-common",
     ],
 }
 
 cc_prebuilt_library_shared {
     name: "libcamera_algoup_jni.xiaomi",
-    owner: "miuicamera-sweet",
+    owner: "miuicamera-davinci",
     strip: {
         none: true,
     },
@@ -20,23 +23,14 @@ cc_prebuilt_library_shared {
                 "proprietary/system/lib64/libcamera_algoup_jni.xiaomi.so",
             ],
             shared_libs: [
-                "libgui_shim_miuicamera",
-                "libandroid",
-                "libandroid_runtime",
-                "libbase",
-                "libbinder",
+                "libvndksupport",
                 "libcamera_client",
                 "libcamera_metadata",
-                "libcutils",
                 "libgui",
-                "liblog",
-                "libmedia_jni_utils",
-                "libnativehelper",
-                "libnativewindow",
-                "libui",
+                "libbinder",
                 "libutils",
-                "libvndksupport",
-                "android.hidl.token@1.0-utils",
+                "libcutils",
+                "liblog",
                 "libc++",
                 "libc",
                 "libm",
@@ -50,7 +44,7 @@ cc_prebuilt_library_shared {
 
 cc_prebuilt_library_shared {
     name: "libcamera_mianode_jni.xiaomi",
-    owner: "miuicamera-sweet",
+    owner: "miuicamera-davinci",
     strip: {
         none: true,
     },
@@ -60,18 +54,14 @@ cc_prebuilt_library_shared {
                 "proprietary/system/lib64/libcamera_mianode_jni.xiaomi.so",
             ],
             shared_libs: [
-                "libgui_shim_miuicamera",
-                "libandroid",
-                "libbinder",
+                "libvndksupport",
                 "libcamera_client",
                 "libcamera_metadata",
-                "libcutils",
                 "libgui",
-                "liblog",
-                "libmedia_jni_utils",
-                "libui",
+                "libbinder",
                 "libutils",
-                "libvndksupport",
+                "libcutils",
+                "liblog",
                 "libxml2",
                 "libc++",
                 "libc",
@@ -85,17 +75,19 @@ cc_prebuilt_library_shared {
 }
 
 cc_prebuilt_library_shared {
-    name: "libmicampostproc_client",
-    owner: "miuicamera-sweet",
+    name: "libmialgoengine",
+    owner: "miuicamera-davinci",
     strip: {
         none: true,
     },
     target: {
         android_arm64: {
             srcs: [
-                "proprietary/system/lib64/libmicampostproc_client.so",
+                "proprietary/vendor/lib64/libmialgoengine.so",
             ],
             shared_libs: [
+                "libarcsoft_high_dynamic_range",
+                "libarcsoft_low_light_hdr",
                 "liblog",
                 "libutils",
                 "libcutils",
@@ -103,15 +95,19 @@ cc_prebuilt_library_shared {
                 "libnativewindow",
                 "libEGL",
                 "libGLESv2",
-                "libfmq",
-                "libgui",
-                "libui",
-                "libcamera_client",
-                "libcamera_metadata",
-                "libmedia_jni_utils",
-                "libnativehelper",
-                "libhidlbase",
-                "vendor.xiaomi.hardware.campostproc@1.0",
+                "libgrallocutils",
+                "libmpbase",
+                "libarcsoft_beautyshot",
+                "libarcsoft_dualcam_refocus",
+                "libarcsoft_portrait_lighting",
+                "libarcsoft_portrait_lighting_c",
+                "libarcsoft_distortion_correction",
+                "libarcsoft_bodyslim",
+                "libalhLDC",
+                "libalAILDC",
+                "libalCFR",
+                "libmibokeh_712",
+                "libVDSuperPhotoAPI",
                 "libc++",
                 "libc",
                 "libm",
@@ -121,39 +117,12 @@ cc_prebuilt_library_shared {
     },
     compile_multilib: "64",
     prefer: true,
-}
-
-cc_prebuilt_library_shared {
-    name: "vendor.xiaomi.hardware.campostproc@1.0",
-    owner: "miuicamera-sweet",
-    strip: {
-        none: true,
-    },
-    target: {
-        android_arm64: {
-            srcs: [
-                "proprietary/system/lib64/vendor.xiaomi.hardware.campostproc@1.0.so",
-            ],
-            shared_libs: [
-                "android.hardware.camera.common@1.0",
-                "libhidlbase",
-                "liblog",
-                "libutils",
-                "libcutils",
-                "libc++",
-                "libc",
-                "libm",
-                "libdl",
-            ],
-        },
-    },
-    compile_multilib: "64",
-    prefer: true,
+    soc_specific: true,
 }
 
 android_app_import {
     name: "MiuiCamera",
-    owner: "miuicamera-sweet",
+    owner: "miuicamera-davinci",
     apk: "proprietary/system/priv-app/MiuiCamera/MiuiCamera.apk",
     overrides: [
         "Aperture",
@@ -163,4 +132,16 @@ android_app_import {
         enabled: false,
     },
     privileged: true,
+}
+
+install_symlink {
+    name: "system_priv-app_MiuiCamera_lib_arm64_libcamera_algoup_jni_xiaomi_so",
+    installed_location: "priv-app/MiuiCamera/lib/arm64/libcamera_algoup_jni.xiaomi.so",
+    symlink_target: "/system/lib64/libcamera_algoup_jni.xiaomi.so",
+}
+
+install_symlink {
+    name: "system_priv-app_MiuiCamera_lib_arm64_libcamera_mianode_jni_xiaomi_so",
+    installed_location: "priv-app/MiuiCamera/lib/arm64/libcamera_mianode_jni.xiaomi.so",
+    symlink_target: "/system/lib64/libcamera_mianode_jni.xiaomi.so",
 }

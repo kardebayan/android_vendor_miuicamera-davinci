@@ -1,7 +1,11 @@
-# All unpinned blobs below are extracted from sweet V14.0.9.0.TKFMIXM
+# All unpinned blobs below are extracted from davinci V12.5.2.0.RFJCNXM
 
-product/priv-app/MiuiCamera/MiuiCamera.apk:system/priv-app/MiuiCamera/MiuiCamera.apk;OVERRIDES=Aperture
-system/lib64/libcamera_algoup_jni.xiaomi.so
-system/lib64/libcamera_mianode_jni.xiaomi.so
-system/lib64/libmicampostproc_client.so
-system/lib64/vendor.xiaomi.hardware.campostproc@1.0.so
+# MiuiCamera
+system/lib64/libcamera_algoup_jni.xiaomi.so;SYMLINK=system/priv-app/MiuiCamera/lib/arm64/libcamera_algoup_jni.xiaomi.so
+system/lib64/libcamera_mianode_jni.xiaomi.so;SYMLINK=system/priv-app/MiuiCamera/lib/arm64/libcamera_mianode_jni.xiaomi.so
+system/priv-app/MiuiCamera/MiuiCamera.apk;OVERRIDES=Aperture
+
+# MiuiCamera (vendor dependencies)
+vendor/etc/camera/visidon_clearshot_params_algoup.xml
+vendor/etc/screen_light.xml
+vendor/lib64/libmialgoengine.so

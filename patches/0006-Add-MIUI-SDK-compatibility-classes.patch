@@ -1,0 +1,5305 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Debayan Kar <kardebayan3@gmail.com>
+Date: Sun, 25 Oct 2026 16:03:20 +0000
+Subject: [PATCH 06/12] Add MIUI SDK compatibility classes
+
+The R era MiuiCamera is built against the MIUI SDK (miui.apk and
+miuisystem.apk) and the MIUI framework, which AOSP does not ship.
+Add the classes it uses, generated from vendor/miuicamera-davinci/
+miui-compat with generate-smali.sh, so that its activities, dialogs,
+interpolators and reflection helpers link on AOSP.
+---
+ .../android/media/AudioParaManger.smali       |   84 ++
+ smali_classes4/android/miui/R$array.smali     |   25 +
+ smali_classes4/android/miui/R$bool.smali      |   25 +
+ smali_classes4/android/miui/R$integer.smali   |   25 +
+ smali_classes4/android/miui/R.smali           |   24 +
+ .../android/os/statistics/E2EScenario.smali   |   14 +
+ .../os/statistics/E2EScenarioPayload.smali    |   34 +
+ .../os/statistics/E2EScenarioPerfTracer.smali |   38 +
+ .../os/statistics/E2EScenarioSettings.smali   |   28 +
+ .../provider/MiuiSettings$Global.smali        |   45 +
+ .../MiuiSettings$SettingsCloudData.smali      |   37 +
+ .../provider/MiuiSettings$System.smali        |   36 +
+ .../android/provider/MiuiSettings.smali       |   24 +
+ .../miui/blur/sdk/drawable/BlurDrawable.smali |   62 +
+ .../internal/log/receiver/DumpReceiver.smali  |   22 +
+ .../com/miui/internal/log/util/Config.smali   |   39 +
+ smali_classes4/miui/R$attr.smali              |   35 +
+ smali_classes4/miui/R$style.smali             |   29 +
+ smali_classes4/miui/R.smali                   |   23 +
+ .../miui/animation/AnimatorBuilder.smali      |   76 +
+ ...nBar$FragmentViewPagerChangeListener.smali |   25 +
+ smali_classes4/miui/app/ActionBar.smali       |   44 +
+ smali_classes4/miui/app/Activity.smali        |   68 +
+ .../miui/app/AlertDialog$Builder.smali        | 1329 +++++++++++++++++
+ smali_classes4/miui/app/AlertDialog.smali     |   65 +
+ smali_classes4/miui/app/ProgressDialog.smali  |   14 +
+ .../core/view/NestedScrollingParent.smali     |   26 +
+ .../core/view/NestedScrollingParent2.smali    |   23 +
+ .../core/view/NestedScrollingParent3.smali    |   11 +
+ .../display/DisplayFeatureManager.smali       |   48 +
+ .../ExpoEaseOutInterpolater.smali             |   55 +
+ smali_classes4/miui/os/Build.smali            |  210 +++
+ smali_classes4/miui/os/Environment.smali      |   25 +
+ smali_classes4/miui/reflect/Field.smali       |  181 +++
+ smali_classes4/miui/reflect/Method.smali      |  209 +++
+ .../miui/reflect/NoSuchClassException.smali   |   32 +
+ .../miui/reflect/NoSuchFieldException.smali   |   32 +
+ .../miui/reflect/NoSuchMethodException.smali  |   32 +
+ .../miui/reflect/ReflectUtils.smali           |  342 +++++
+ .../miui/reflect/ReflectionException.smali    |   32 +
+ .../miui/security/SecurityManager.smali       |   32 +
+ .../miui/util/AttributeResolver.smali         |   74 +
+ .../miui/util/HapticFeedbackUtil.smali        |  218 +++
+ smali_classes4/miui/util/IOUtils.smali        |   80 +
+ .../animation/CubicEaseInInterpolator.smali   |   29 +
+ .../CubicEaseInOutInterpolator.smali          |   56 +
+ .../animation/CubicEaseOutInterpolator.smali  |   35 +
+ .../QuadraticEaseInOutInterpolator.smali      |   56 +
+ .../QuadraticEaseOutInterpolator.smali        |   33 +
+ .../animation/QuarticEaseInInterpolator.smali |   31 +
+ .../QuarticEaseInOutInterpolator.smali        |   62 +
+ .../QuarticEaseOutInterpolator.smali          |   39 +
+ .../animation/QuinticEaseInInterpolator.smali |   33 +
+ .../QuinticEaseOutInterpolator.smali          |   39 +
+ .../animation/SineEaseInOutInterpolator.smali |   46 +
+ .../animation/SineEaseOutInterpolator.smali   |   38 +
+ .../widget/ImmersionListPopupWindow$1.smali   |   86 ++
+ .../widget/ImmersionListPopupWindow.smali     |  310 ++++
+ 58 files changed, 4825 insertions(+)
+ create mode 100644 smali_classes4/android/media/AudioParaManger.smali
+ create mode 100644 smali_classes4/android/miui/R$array.smali
+ create mode 100644 smali_classes4/android/miui/R$bool.smali
+ create mode 100644 smali_classes4/android/miui/R$integer.smali
+ create mode 100644 smali_classes4/android/miui/R.smali
+ create mode 100644 smali_classes4/android/os/statistics/E2EScenario.smali
+ create mode 100644 smali_classes4/android/os/statistics/E2EScenarioPayload.smali
+ create mode 100644 smali_classes4/android/os/statistics/E2EScenarioPerfTracer.smali
+ create mode 100644 smali_classes4/android/os/statistics/E2EScenarioSettings.smali
+ create mode 100644 smali_classes4/android/provider/MiuiSettings$Global.smali
+ create mode 100644 smali_classes4/android/provider/MiuiSettings$SettingsCloudData.smali
+ create mode 100644 smali_classes4/android/provider/MiuiSettings$System.smali
+ create mode 100644 smali_classes4/android/provider/MiuiSettings.smali
+ create mode 100644 smali_classes4/com/miui/blur/sdk/drawable/BlurDrawable.smali
+ create mode 100644 smali_classes4/com/miui/internal/log/receiver/DumpReceiver.smali
+ create mode 100644 smali_classes4/com/miui/internal/log/util/Config.smali
+ create mode 100644 smali_classes4/miui/R$attr.smali
+ create mode 100644 smali_classes4/miui/R$style.smali
+ create mode 100644 smali_classes4/miui/R.smali
+ create mode 100644 smali_classes4/miui/animation/AnimatorBuilder.smali
+ create mode 100644 smali_classes4/miui/app/ActionBar$FragmentViewPagerChangeListener.smali
+ create mode 100644 smali_classes4/miui/app/ActionBar.smali
+ create mode 100644 smali_classes4/miui/app/Activity.smali
+ create mode 100644 smali_classes4/miui/app/AlertDialog$Builder.smali
+ create mode 100644 smali_classes4/miui/app/AlertDialog.smali
+ create mode 100644 smali_classes4/miui/app/ProgressDialog.smali
+ create mode 100644 smali_classes4/miui/core/view/NestedScrollingParent.smali
+ create mode 100644 smali_classes4/miui/core/view/NestedScrollingParent2.smali
+ create mode 100644 smali_classes4/miui/core/view/NestedScrollingParent3.smali
+ create mode 100644 smali_classes4/miui/hardware/display/DisplayFeatureManager.smali
+ create mode 100644 smali_classes4/miui/maml/animation/interpolater/ExpoEaseOutInterpolater.smali
+ create mode 100644 smali_classes4/miui/os/Build.smali
+ create mode 100644 smali_classes4/miui/os/Environment.smali
+ create mode 100644 smali_classes4/miui/reflect/Field.smali
+ create mode 100644 smali_classes4/miui/reflect/Method.smali
+ create mode 100644 smali_classes4/miui/reflect/NoSuchClassException.smali
+ create mode 100644 smali_classes4/miui/reflect/NoSuchFieldException.smali
+ create mode 100644 smali_classes4/miui/reflect/NoSuchMethodException.smali
+ create mode 100644 smali_classes4/miui/reflect/ReflectUtils.smali
+ create mode 100644 smali_classes4/miui/reflect/ReflectionException.smali
+ create mode 100644 smali_classes4/miui/security/SecurityManager.smali
+ create mode 100644 smali_classes4/miui/util/AttributeResolver.smali
+ create mode 100644 smali_classes4/miui/util/HapticFeedbackUtil.smali
+ create mode 100644 smali_classes4/miui/util/IOUtils.smali
+ create mode 100644 smali_classes4/miui/view/animation/CubicEaseInInterpolator.smali
+ create mode 100644 smali_classes4/miui/view/animation/CubicEaseInOutInterpolator.smali
+ create mode 100644 smali_classes4/miui/view/animation/CubicEaseOutInterpolator.smali
+ create mode 100644 smali_classes4/miui/view/animation/QuadraticEaseInOutInterpolator.smali
+ create mode 100644 smali_classes4/miui/view/animation/QuadraticEaseOutInterpolator.smali
+ create mode 100644 smali_classes4/miui/view/animation/QuarticEaseInInterpolator.smali
+ create mode 100644 smali_classes4/miui/view/animation/QuarticEaseInOutInterpolator.smali
+ create mode 100644 smali_classes4/miui/view/animation/QuarticEaseOutInterpolator.smali
+ create mode 100644 smali_classes4/miui/view/animation/QuinticEaseInInterpolator.smali
+ create mode 100644 smali_classes4/miui/view/animation/QuinticEaseOutInterpolator.smali
+ create mode 100644 smali_classes4/miui/view/animation/SineEaseInOutInterpolator.smali
+ create mode 100644 smali_classes4/miui/view/animation/SineEaseOutInterpolator.smali
+ create mode 100644 smali_classes4/miui/widget/ImmersionListPopupWindow$1.smali
+ create mode 100644 smali_classes4/miui/widget/ImmersionListPopupWindow.smali
+
+diff --git a/smali_classes4/android/media/AudioParaManger.smali b/smali_classes4/android/media/AudioParaManger.smali
+new file mode 100644
+index 00000000..38677ea1
+--- /dev/null
++++ b/smali_classes4/android/media/AudioParaManger.smali
+@@ -0,0 +1,84 @@
++.class public Landroid/media/AudioParaManger;
++.super Ljava/lang/Object;
++.source "AudioParaManger.java"
++
++
++# direct methods
++.method public constructor <init>(Landroid/media/MediaRecorder;Landroid/content/Context;)V
++    .locals 0
++
++    .line 12
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public init(IIIDDDDDZ)Z
++    .locals 0
++
++    const/4 p0, 0x0
++
++    return p0
++.end method
++
++.method public prepare()V
++    .locals 0
++
++    return-void
++.end method
++
++.method public setAudioFocusAzimuth(D)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public setAudioFocusElevation(D)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public setAudioFocusHeight(D)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public setAudioFocusWidth(D)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public setAudioWindNoise(Z)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public setAudioZoomLevel(D)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public setMaxSupportLevel(I)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public setRecordType(I)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public start()V
++    .locals 0
++
++    return-void
++.end method
+diff --git a/smali_classes4/android/miui/R$array.smali b/smali_classes4/android/miui/R$array.smali
+new file mode 100644
+index 00000000..7a036a1c
+--- /dev/null
++++ b/smali_classes4/android/miui/R$array.smali
+@@ -0,0 +1,25 @@
++.class public final Landroid/miui/R$array;
++.super Ljava/lang/Object;
++.source "R.java"
++
++
++# annotations
++.annotation system Ldalvik/annotation/EnclosingClass;
++    value = Landroid/miui/R;
++.end annotation
++
++.annotation system Ldalvik/annotation/InnerClass;
++    accessFlags = 0x19
++    name = "array"
++.end annotation
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
+diff --git a/smali_classes4/android/miui/R$bool.smali b/smali_classes4/android/miui/R$bool.smali
+new file mode 100644
+index 00000000..58fb5bda
+--- /dev/null
++++ b/smali_classes4/android/miui/R$bool.smali
+@@ -0,0 +1,25 @@
++.class public final Landroid/miui/R$bool;
++.super Ljava/lang/Object;
++.source "R.java"
++
++
++# annotations
++.annotation system Ldalvik/annotation/EnclosingClass;
++    value = Landroid/miui/R;
++.end annotation
++
++.annotation system Ldalvik/annotation/InnerClass;
++    accessFlags = 0x19
++    name = "bool"
++.end annotation
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 12
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
+diff --git a/smali_classes4/android/miui/R$integer.smali b/smali_classes4/android/miui/R$integer.smali
+new file mode 100644
+index 00000000..c63f74a4
+--- /dev/null
++++ b/smali_classes4/android/miui/R$integer.smali
+@@ -0,0 +1,25 @@
++.class public final Landroid/miui/R$integer;
++.super Ljava/lang/Object;
++.source "R.java"
++
++
++# annotations
++.annotation system Ldalvik/annotation/EnclosingClass;
++    value = Landroid/miui/R;
++.end annotation
++
++.annotation system Ldalvik/annotation/InnerClass;
++    accessFlags = 0x19
++    name = "integer"
++.end annotation
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 14
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
+diff --git a/smali_classes4/android/miui/R.smali b/smali_classes4/android/miui/R.smali
+new file mode 100644
+index 00000000..c4c06e63
+--- /dev/null
++++ b/smali_classes4/android/miui/R.smali
+@@ -0,0 +1,24 @@
++.class public final Landroid/miui/R;
++.super Ljava/lang/Object;
++.source "R.java"
++
++
++# annotations
++.annotation system Ldalvik/annotation/MemberClasses;
++    value = {
++        Landroid/miui/R$integer;,
++        Landroid/miui/R$bool;,
++        Landroid/miui/R$array;
++    }
++.end annotation
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 9
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
+diff --git a/smali_classes4/android/os/statistics/E2EScenario.smali b/smali_classes4/android/os/statistics/E2EScenario.smali
+new file mode 100644
+index 00000000..77e0fd1b
+--- /dev/null
++++ b/smali_classes4/android/os/statistics/E2EScenario.smali
+@@ -0,0 +1,14 @@
++.class public Landroid/os/statistics/E2EScenario;
++.super Ljava/lang/Object;
++.source "E2EScenario.java"
++
++
++# direct methods
++.method public constructor <init>(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
++    .locals 0
++
++    .line 9
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
+diff --git a/smali_classes4/android/os/statistics/E2EScenarioPayload.smali b/smali_classes4/android/os/statistics/E2EScenarioPayload.smali
+new file mode 100644
+index 00000000..0db610ea
+--- /dev/null
++++ b/smali_classes4/android/os/statistics/E2EScenarioPayload.smali
+@@ -0,0 +1,34 @@
++.class public Landroid/os/statistics/E2EScenarioPayload;
++.super Ljava/lang/Object;
++.source "E2EScenarioPayload.java"
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public put(Ljava/lang/Object;Ljava/lang/Object;)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public putAll(Ljava/util/Map;)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public varargs putValues([Ljava/lang/Object;)V
++    .locals 0
++
++    return-void
++.end method
+diff --git a/smali_classes4/android/os/statistics/E2EScenarioPerfTracer.smali b/smali_classes4/android/os/statistics/E2EScenarioPerfTracer.smali
+new file mode 100644
+index 00000000..15857018
+--- /dev/null
++++ b/smali_classes4/android/os/statistics/E2EScenarioPerfTracer.smali
+@@ -0,0 +1,38 @@
++.class public Landroid/os/statistics/E2EScenarioPerfTracer;
++.super Ljava/lang/Object;
++.source "E2EScenarioPerfTracer.java"
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 9
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++.method public static abortScenario(Landroid/os/statistics/E2EScenario;Ljava/lang/String;)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public static asyncBeginScenario(Landroid/os/statistics/E2EScenario;Landroid/os/statistics/E2EScenarioSettings;Ljava/lang/String;Landroid/os/statistics/E2EScenarioPayload;)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public static finishScenario(Landroid/os/statistics/E2EScenario;)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public static finishScenario(Landroid/os/statistics/E2EScenario;Ljava/lang/String;Landroid/os/statistics/E2EScenarioPayload;)V
++    .locals 0
++
++    return-void
++.end method
+diff --git a/smali_classes4/android/os/statistics/E2EScenarioSettings.smali b/smali_classes4/android/os/statistics/E2EScenarioSettings.smali
+new file mode 100644
+index 00000000..1f46573f
+--- /dev/null
++++ b/smali_classes4/android/os/statistics/E2EScenarioSettings.smali
+@@ -0,0 +1,28 @@
++.class public Landroid/os/statistics/E2EScenarioSettings;
++.super Ljava/lang/Object;
++.source "E2EScenarioSettings.java"
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 8
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public setHistoryLimitPerDay(I)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public setStatisticsMode(I)V
++    .locals 0
++
++    return-void
++.end method
+diff --git a/smali_classes4/android/provider/MiuiSettings$Global.smali b/smali_classes4/android/provider/MiuiSettings$Global.smali
+new file mode 100644
+index 00000000..4840468c
+--- /dev/null
++++ b/smali_classes4/android/provider/MiuiSettings$Global.smali
+@@ -0,0 +1,45 @@
++.class public Landroid/provider/MiuiSettings$Global;
++.super Ljava/lang/Object;
++.source "MiuiSettings.java"
++
++
++# annotations
++.annotation system Ldalvik/annotation/EnclosingClass;
++    value = Landroid/provider/MiuiSettings;
++.end annotation
++
++.annotation system Ldalvik/annotation/InnerClass;
++    accessFlags = 0x9
++    name = "Global"
++.end annotation
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 11
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++.method public static getBoolean(Landroid/content/ContentResolver;Ljava/lang/String;)Z
++    .locals 1
++
++    const/4 v0, 0x0
++
++    .line 13
++    invoke-static {p0, p1, v0}, Landroid/provider/Settings$Global;->getInt(Landroid/content/ContentResolver;Ljava/lang/String;I)I
++
++    move-result p0
++
++    if-eqz p0, :cond_0
++
++    const/4 p0, 0x1
++
++    return p0
++
++    :cond_0
++    return v0
++.end method
+diff --git a/smali_classes4/android/provider/MiuiSettings$SettingsCloudData.smali b/smali_classes4/android/provider/MiuiSettings$SettingsCloudData.smali
+new file mode 100644
+index 00000000..3ca85977
+--- /dev/null
++++ b/smali_classes4/android/provider/MiuiSettings$SettingsCloudData.smali
+@@ -0,0 +1,37 @@
++.class public Landroid/provider/MiuiSettings$SettingsCloudData;
++.super Ljava/lang/Object;
++.source "MiuiSettings.java"
++
++
++# annotations
++.annotation system Ldalvik/annotation/EnclosingClass;
++    value = Landroid/provider/MiuiSettings;
++.end annotation
++
++.annotation system Ldalvik/annotation/InnerClass;
++    accessFlags = 0x9
++    name = "SettingsCloudData"
++.end annotation
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 24
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++.method public static getCloudDataInt(Landroid/content/ContentResolver;Ljava/lang/String;Ljava/lang/String;I)I
++    .locals 0
++
++    return p3
++.end method
++
++.method public static getCloudDataString(Landroid/content/ContentResolver;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
++    .locals 0
++
++    return-object p3
++.end method
+diff --git a/smali_classes4/android/provider/MiuiSettings$System.smali b/smali_classes4/android/provider/MiuiSettings$System.smali
+new file mode 100644
+index 00000000..9fdc0536
+--- /dev/null
++++ b/smali_classes4/android/provider/MiuiSettings$System.smali
+@@ -0,0 +1,36 @@
++.class public Landroid/provider/MiuiSettings$System;
++.super Ljava/lang/Object;
++.source "MiuiSettings.java"
++
++
++# annotations
++.annotation system Ldalvik/annotation/EnclosingClass;
++    value = Landroid/provider/MiuiSettings;
++.end annotation
++
++.annotation system Ldalvik/annotation/InnerClass;
++    accessFlags = 0x9
++    name = "System"
++.end annotation
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 17
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++.method public static getString(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;
++    .locals 0
++
++    .line 19
++    invoke-static {p0, p1}, Landroid/provider/Settings$System;->getString(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;
++
++    move-result-object p0
++
++    return-object p0
++.end method
+diff --git a/smali_classes4/android/provider/MiuiSettings.smali b/smali_classes4/android/provider/MiuiSettings.smali
+new file mode 100644
+index 00000000..096d44c0
+--- /dev/null
++++ b/smali_classes4/android/provider/MiuiSettings.smali
+@@ -0,0 +1,24 @@
++.class public Landroid/provider/MiuiSettings;
++.super Ljava/lang/Object;
++.source "MiuiSettings.java"
++
++
++# annotations
++.annotation system Ldalvik/annotation/MemberClasses;
++    value = {
++        Landroid/provider/MiuiSettings$SettingsCloudData;,
++        Landroid/provider/MiuiSettings$System;,
++        Landroid/provider/MiuiSettings$Global;
++    }
++.end annotation
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
+diff --git a/smali_classes4/com/miui/blur/sdk/drawable/BlurDrawable.smali b/smali_classes4/com/miui/blur/sdk/drawable/BlurDrawable.smali
+new file mode 100644
+index 00000000..d5cad8c5
+--- /dev/null
++++ b/smali_classes4/com/miui/blur/sdk/drawable/BlurDrawable.smali
+@@ -0,0 +1,62 @@
++.class public Lcom/miui/blur/sdk/drawable/BlurDrawable;
++.super Landroid/graphics/drawable/Drawable;
++.source "BlurDrawable.java"
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 14
++    invoke-direct {p0}, Landroid/graphics/drawable/Drawable;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public draw(Landroid/graphics/Canvas;)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public getOpacity()I
++    .locals 0
++
++    const/4 p0, -0x2
++
++    return p0
++.end method
++
++.method public isSupportBlur()Z
++    .locals 0
++
++    const/4 p0, 0x0
++
++    return p0
++.end method
++
++.method public setAlpha(I)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public setBlurRatio(F)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public setColorFilter(Landroid/graphics/ColorFilter;)V
++    .locals 0
++
++    return-void
++.end method
++
++.method public setMixColor(II)V
++    .locals 0
++
++    return-void
++.end method
+diff --git a/smali_classes4/com/miui/internal/log/receiver/DumpReceiver.smali b/smali_classes4/com/miui/internal/log/receiver/DumpReceiver.smali
+new file mode 100644
+index 00000000..b7e0ba68
+--- /dev/null
++++ b/smali_classes4/com/miui/internal/log/receiver/DumpReceiver.smali
+@@ -0,0 +1,22 @@
++.class public Lcom/miui/internal/log/receiver/DumpReceiver;
++.super Landroid/content/BroadcastReceiver;
++.source "DumpReceiver.java"
++
++
++# direct methods
++.method public constructor <init>(Ljava/lang/String;Ljava/lang/String;)V
++    .locals 0
++
++    .line 14
++    invoke-direct {p0}, Landroid/content/BroadcastReceiver;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public onReceive(Landroid/content/Context;Landroid/content/Intent;)V
++    .locals 0
++
++    return-void
++.end method
+diff --git a/smali_classes4/com/miui/internal/log/util/Config.smali b/smali_classes4/com/miui/internal/log/util/Config.smali
+new file mode 100644
+index 00000000..f53c08e0
+--- /dev/null
++++ b/smali_classes4/com/miui/internal/log/util/Config.smali
+@@ -0,0 +1,39 @@
++.class public Lcom/miui/internal/log/util/Config;
++.super Ljava/lang/Object;
++.source "Config.java"
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++.method public static getDefaultCacheLogDir()Ljava/lang/String;
++    .locals 2
++
++    .line 12
++    new-instance v0, Ljava/lang/StringBuilder;
++
++    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
++
++    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
++
++    move-result-object v1
++
++    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
++
++    const-string v1, "/MIUI/debug_log/"
++
++    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object v0
++
++    return-object v0
++.end method
+diff --git a/smali_classes4/miui/R$attr.smali b/smali_classes4/miui/R$attr.smali
+new file mode 100644
+index 00000000..62d278ae
+--- /dev/null
++++ b/smali_classes4/miui/R$attr.smali
+@@ -0,0 +1,35 @@
++.class public final Lmiui/R$attr;
++.super Ljava/lang/Object;
++.source "R.java"
++
++
++# annotations
++.annotation system Ldalvik/annotation/EnclosingClass;
++    value = Lmiui/R;
++.end annotation
++
++.annotation system Ldalvik/annotation/InnerClass;
++    accessFlags = 0x19
++    name = "attr"
++.end annotation
++
++
++# static fields
++.field public static final state_first_v:I = 0x7e000001
++
++.field public static final state_last_v:I = 0x7e000003
++
++.field public static final state_middle_v:I = 0x7e000002
++
++.field public static final state_single_v:I = 0x7e000004
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
+diff --git a/smali_classes4/miui/R$style.smali b/smali_classes4/miui/R$style.smali
+new file mode 100644
+index 00000000..b049ed86
+--- /dev/null
++++ b/smali_classes4/miui/R$style.smali
+@@ -0,0 +1,29 @@
++.class public final Lmiui/R$style;
++.super Ljava/lang/Object;
++.source "R.java"
++
++
++# annotations
++.annotation system Ldalvik/annotation/EnclosingClass;
++    value = Lmiui/R;
++.end annotation
++
++.annotation system Ldalvik/annotation/InnerClass;
++    accessFlags = 0x19
++    name = "style"
++.end annotation
++
++
++# static fields
++.field public static final Widget_Button_Dialog:I = 0x10302e1
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 18
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
+diff --git a/smali_classes4/miui/R.smali b/smali_classes4/miui/R.smali
+new file mode 100644
+index 00000000..3e20ea3d
+--- /dev/null
++++ b/smali_classes4/miui/R.smali
+@@ -0,0 +1,23 @@
++.class public final Lmiui/R;
++.super Ljava/lang/Object;
++.source "R.java"
++
++
++# annotations
++.annotation system Ldalvik/annotation/MemberClasses;
++    value = {
++        Lmiui/R$style;,
++        Lmiui/R$attr;
++    }
++.end annotation
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 9
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
+diff --git a/smali_classes4/miui/animation/AnimatorBuilder.smali b/smali_classes4/miui/animation/AnimatorBuilder.smali
+new file mode 100644
+index 00000000..d7ceb640
+--- /dev/null
++++ b/smali_classes4/miui/animation/AnimatorBuilder.smali
+@@ -0,0 +1,76 @@
++.class public Lmiui/animation/AnimatorBuilder;
++.super Ljava/lang/Object;
++.source "AnimatorBuilder.java"
++
++
++# instance fields
++.field private final mAnimator:Landroid/animation/Animator;
++
++
++# direct methods
++.method private constructor <init>(Landroid/animation/Animator;)V
++    .locals 0
++
++    .line 14
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    .line 15
++    iput-object p1, p0, Lmiui/animation/AnimatorBuilder;->mAnimator:Landroid/animation/Animator;
++
++    return-void
++.end method
++
++.method public static of(Landroid/animation/Animator;)Lmiui/animation/AnimatorBuilder;
++    .locals 1
++
++    .line 19
++    new-instance v0, Lmiui/animation/AnimatorBuilder;
++
++    invoke-direct {v0, p0}, Lmiui/animation/AnimatorBuilder;-><init>(Landroid/animation/Animator;)V
++
++    return-object v0
++.end method
++
++
++# virtual methods
++.method public addListener(Landroid/animation/Animator$AnimatorListener;)Lmiui/animation/AnimatorBuilder;
++    .locals 1
++
++    .line 33
++    iget-object v0, p0, Lmiui/animation/AnimatorBuilder;->mAnimator:Landroid/animation/Animator;
++
++    invoke-virtual {v0, p1}, Landroid/animation/Animator;->addListener(Landroid/animation/Animator$AnimatorListener;)V
++
++    return-object p0
++.end method
++
++.method public animator()Landroid/animation/Animator;
++    .locals 0
++
++    .line 38
++    iget-object p0, p0, Lmiui/animation/AnimatorBuilder;->mAnimator:Landroid/animation/Animator;
++
++    return-object p0
++.end method
++
++.method public setDuration(J)Lmiui/animation/AnimatorBuilder;
++    .locals 1
++
++    .line 23
++    iget-object v0, p0, Lmiui/animation/AnimatorBuilder;->mAnimator:Landroid/animation/Animator;
++
++    invoke-virtual {v0, p1, p2}, Landroid/animation/Animator;->setDuration(J)Landroid/animation/Animator;
++
++    return-object p0
++.end method
++
++.method public setInterpolator(Landroid/animation/TimeInterpolator;)Lmiui/animation/AnimatorBuilder;
++    .locals 1
++
++    .line 28
++    iget-object v0, p0, Lmiui/animation/AnimatorBuilder;->mAnimator:Landroid/animation/Animator;
++
++    invoke-virtual {v0, p1}, Landroid/animation/Animator;->setInterpolator(Landroid/animation/TimeInterpolator;)V
++
++    return-object p0
++.end method
+diff --git a/smali_classes4/miui/app/ActionBar$FragmentViewPagerChangeListener.smali b/smali_classes4/miui/app/ActionBar$FragmentViewPagerChangeListener.smali
+new file mode 100644
+index 00000000..ce13c8dd
+--- /dev/null
++++ b/smali_classes4/miui/app/ActionBar$FragmentViewPagerChangeListener.smali
+@@ -0,0 +1,25 @@
++.class public interface abstract Lmiui/app/ActionBar$FragmentViewPagerChangeListener;
++.super Ljava/lang/Object;
++.source "ActionBar.java"
++
++
++# annotations
++.annotation system Ldalvik/annotation/EnclosingClass;
++    value = Lmiui/app/ActionBar;
++.end annotation
++
++.annotation system Ldalvik/annotation/InnerClass;
++    accessFlags = 0x609
++    name = "FragmentViewPagerChangeListener"
++.end annotation
++
++
++# virtual methods
++.method public abstract onPageScrollStateChanged(I)V
++.end method
++
++.method public abstract onPageScrolled(IFZZ)V
++.end method
++
++.method public abstract onPageSelected(I)V
++.end method
+diff --git a/smali_classes4/miui/app/ActionBar.smali b/smali_classes4/miui/app/ActionBar.smali
+new file mode 100644
+index 00000000..0eb40eec
+--- /dev/null
++++ b/smali_classes4/miui/app/ActionBar.smali
+@@ -0,0 +1,44 @@
++.class public abstract Lmiui/app/ActionBar;
++.super Landroid/app/ActionBar;
++.source "ActionBar.java"
++
++
++# annotations
++.annotation system Ldalvik/annotation/MemberClasses;
++    value = {
++        Lmiui/app/ActionBar$FragmentViewPagerChangeListener;
++    }
++.end annotation
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 16
++    invoke-direct {p0}, Landroid/app/ActionBar;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public abstract addFragmentTab(Ljava/lang/String;Landroid/app/ActionBar$Tab;Ljava/lang/Class;Landroid/os/Bundle;Z)I
++    .annotation system Ldalvik/annotation/Signature;
++        value = {
++            "(",
++            "Ljava/lang/String;",
++            "Landroid/app/ActionBar$Tab;",
++            "Ljava/lang/Class<",
++            "*>;",
++            "Landroid/os/Bundle;",
++            "Z)I"
++        }
++    .end annotation
++.end method
++
++.method public abstract addOnFragmentViewPagerChangeListener(Lmiui/app/ActionBar$FragmentViewPagerChangeListener;)V
++.end method
++
++.method public abstract setFragmentViewPagerMode(Landroid/content/Context;Landroid/app/FragmentManager;Z)V
++.end method
+diff --git a/smali_classes4/miui/app/Activity.smali b/smali_classes4/miui/app/Activity.smali
+new file mode 100644
+index 00000000..f18bc36b
+--- /dev/null
++++ b/smali_classes4/miui/app/Activity.smali
+@@ -0,0 +1,68 @@
++.class public Lmiui/app/Activity;
++.super Landroid/app/Activity;
++.source "Activity.java"
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Landroid/app/Activity;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public bridge synthetic getActionBar()Landroid/app/ActionBar;
++    .locals 0
++
++    .line 10
++    invoke-virtual {p0}, Lmiui/app/Activity;->getActionBar()Lmiui/app/ActionBar;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public getActionBar()Lmiui/app/ActionBar;
++    .locals 0
++
++    const/4 p0, 0x0
++
++    return-object p0
++.end method
++
++.method protected onCreate(Landroid/os/Bundle;)V
++    .locals 0
++
++    .line 13
++    invoke-super {p0, p1}, Landroid/app/Activity;->onCreate(Landroid/os/Bundle;)V
++
++    .line 14
++    invoke-super {p0}, Landroid/app/Activity;->getActionBar()Landroid/app/ActionBar;
++
++    move-result-object p0
++
++    if-eqz p0, :cond_0
++
++    const/4 p1, 0x1
++
++    .line 16
++    invoke-virtual {p0, p1}, Landroid/app/ActionBar;->setDisplayHomeAsUpEnabled(Z)V
++
++    :cond_0
++    return-void
++.end method
++
++.method public onNavigateUp()Z
++    .locals 0
++
++    .line 22
++    invoke-virtual {p0}, Lmiui/app/Activity;->onBackPressed()V
++
++    const/4 p0, 0x1
++
++    return p0
++.end method
+diff --git a/smali_classes4/miui/app/AlertDialog$Builder.smali b/smali_classes4/miui/app/AlertDialog$Builder.smali
+new file mode 100644
+index 00000000..4df12a56
+--- /dev/null
++++ b/smali_classes4/miui/app/AlertDialog$Builder.smali
+@@ -0,0 +1,1329 @@
++.class public Lmiui/app/AlertDialog$Builder;
++.super Landroid/app/AlertDialog$Builder;
++.source "AlertDialog.java"
++
++
++# annotations
++.annotation system Ldalvik/annotation/EnclosingClass;
++    value = Lmiui/app/AlertDialog;
++.end annotation
++
++.annotation system Ldalvik/annotation/InnerClass;
++    accessFlags = 0x9
++    name = "Builder"
++.end annotation
++
++
++# instance fields
++.field private mCheckBoxChecked:Z
++
++.field private mCheckBoxMessage:Ljava/lang/CharSequence;
++
++.field private mHasView:Z
++
++
++# direct methods
++.method public constructor <init>(Landroid/content/Context;)V
++    .locals 0
++
++    .line 42
++    invoke-direct {p0, p1}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;)V
++
++    return-void
++.end method
++
++.method public constructor <init>(Landroid/content/Context;I)V
++    .locals 0
++
++    .line 46
++    invoke-direct {p0, p1, p2}, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;I)V
++
++    return-void
++.end method
++
++.method private static get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
++    .locals 1
++    .annotation system Ldalvik/annotation/Throws;
++        value = {
++            Ljava/lang/ReflectiveOperationException;
++        }
++    .end annotation
++
++    .line 110
++    invoke-virtual {p0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
++
++    move-result-object v0
++
++    invoke-virtual {v0, p1}, Ljava/lang/Class;->getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;
++
++    move-result-object p1
++
++    const/4 v0, 0x1
++
++    .line 111
++    invoke-virtual {p1, v0}, Ljava/lang/reflect/Field;->setAccessible(Z)V
++
++    .line 112
++    invoke-virtual {p1, p0}, Ljava/lang/reflect/Field;->get(Ljava/lang/Object;)Ljava/lang/Object;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method private static getBoolean(Ljava/lang/Object;Ljava/lang/String;)Z
++    .locals 1
++    .annotation system Ldalvik/annotation/Throws;
++        value = {
++            Ljava/lang/ReflectiveOperationException;
++        }
++    .end annotation
++
++    .line 117
++    invoke-virtual {p0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
++
++    move-result-object v0
++
++    invoke-virtual {v0, p1}, Ljava/lang/Class;->getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;
++
++    move-result-object p1
++
++    const/4 v0, 0x1
++
++    .line 118
++    invoke-virtual {p1, v0}, Ljava/lang/reflect/Field;->setAccessible(Z)V
++
++    .line 119
++    invoke-virtual {p1, p0}, Ljava/lang/reflect/Field;->getBoolean(Ljava/lang/Object;)Z
++
++    move-result p0
++
++    return p0
++.end method
++
++
++# virtual methods
++.method public bridge synthetic create()Landroid/app/AlertDialog;
++    .locals 0
++
++    .line 36
++    invoke-virtual {p0}, Lmiui/app/AlertDialog$Builder;->create()Lmiui/app/AlertDialog;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public create()Lmiui/app/AlertDialog;
++    .locals 9
++
++    .line 57
++    new-instance v0, Lmiui/app/AlertDialog;
++
++    invoke-virtual {p0}, Lmiui/app/AlertDialog$Builder;->getContext()Landroid/content/Context;
++
++    move-result-object v1
++
++    const/4 v2, 0x0
++
++    invoke-direct {v0, v1, v2}, Lmiui/app/AlertDialog;-><init>(Landroid/content/Context;I)V
++
++    .line 60
++    :try_start_0
++    const-class v1, Landroid/app/AlertDialog$Builder;
++
++    const-string v3, "P"
++
++    invoke-virtual {v1, v3}, Ljava/lang/Class;->getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;
++
++    move-result-object v1
++
++    const/4 v3, 0x1
++
++    .line 61
++    invoke-virtual {v1, v3}, Ljava/lang/reflect/Field;->setAccessible(Z)V
++
++    .line 62
++    invoke-virtual {v1, p0}, Ljava/lang/reflect/Field;->get(Ljava/lang/Object;)Ljava/lang/Object;
++
++    move-result-object v1
++
++    .line 63
++    const-class v4, Landroid/app/AlertDialog;
++
++    const-string v5, "mAlert"
++
++    invoke-virtual {v4, v5}, Ljava/lang/Class;->getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;
++
++    move-result-object v4
++
++    .line 64
++    invoke-virtual {v4, v3}, Ljava/lang/reflect/Field;->setAccessible(Z)V
++
++    .line 65
++    invoke-virtual {v4, v0}, Ljava/lang/reflect/Field;->get(Ljava/lang/Object;)Ljava/lang/Object;
++
++    move-result-object v4
++
++    .line 66
++    invoke-virtual {v1}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
++
++    move-result-object v5
++
++    const-string v6, "apply"
++
++    new-array v7, v3, [Ljava/lang/Class;
++
++    invoke-virtual {v4}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
++
++    move-result-object v8
++
++    aput-object v8, v7, v2
++
++    invoke-virtual {v5, v6, v7}, Ljava/lang/Class;->getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
++
++    move-result-object v5
++
++    .line 67
++    filled-new-array {v4}, [Ljava/lang/Object;
++
++    move-result-object v4
++
++    invoke-virtual {v5, v1, v4}, Ljava/lang/reflect/Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
++
++    .line 69
++    const-string v4, "mCancelable"
++
++    invoke-static {v1, v4}, Lmiui/app/AlertDialog$Builder;->getBoolean(Ljava/lang/Object;Ljava/lang/String;)Z
++
++    move-result v4
++
++    .line 70
++    invoke-virtual {v0, v4}, Lmiui/app/AlertDialog;->setCancelable(Z)V
++
++    if-eqz v4, :cond_0
++
++    .line 72
++    invoke-virtual {v0, v3}, Lmiui/app/AlertDialog;->setCanceledOnTouchOutside(Z)V
++
++    .line 74
++    :cond_0
++    const-string v3, "mOnCancelListener"
++
++    .line 75
++    invoke-static {v1, v3}, Lmiui/app/AlertDialog$Builder;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
++
++    move-result-object v3
++
++    check-cast v3, Landroid/content/DialogInterface$OnCancelListener;
++
++    .line 74
++    invoke-virtual {v0, v3}, Lmiui/app/AlertDialog;->setOnCancelListener(Landroid/content/DialogInterface$OnCancelListener;)V
++
++    .line 76
++    const-string v3, "mOnDismissListener"
++
++    .line 77
++    invoke-static {v1, v3}, Lmiui/app/AlertDialog$Builder;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
++
++    move-result-object v3
++
++    check-cast v3, Landroid/content/DialogInterface$OnDismissListener;
++
++    .line 76
++    invoke-virtual {v0, v3}, Lmiui/app/AlertDialog;->setOnDismissListener(Landroid/content/DialogInterface$OnDismissListener;)V
++
++    .line 78
++    const-string v3, "mOnKeyListener"
++
++    .line 79
++    invoke-static {v1, v3}, Lmiui/app/AlertDialog$Builder;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
++
++    move-result-object v1
++
++    check-cast v1, Landroid/content/DialogInterface$OnKeyListener;
++
++    if-eqz v1, :cond_1
++
++    .line 81
++    invoke-virtual {v0, v1}, Lmiui/app/AlertDialog;->setOnKeyListener(Landroid/content/DialogInterface$OnKeyListener;)V
++    :try_end_0
++    .catch Ljava/lang/ReflectiveOperationException; {:try_start_0 .. :try_end_0} :catch_0
++
++    goto :goto_0
++
++    :catch_0
++    move-exception v1
++
++    .line 84
++    const-string v3, "MiuiCompatAlertDialog"
++
++    const-string v4, "Failed to apply alert params"
++
++    invoke-static {v3, v4, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
++
++    .line 87
++    :cond_1
++    :goto_0
++    iget-object v1, p0, Lmiui/app/AlertDialog$Builder;->mCheckBoxMessage:Ljava/lang/CharSequence;
++
++    if-eqz v1, :cond_2
++
++    iget-boolean v1, p0, Lmiui/app/AlertDialog$Builder;->mHasView:Z
++
++    if-nez v1, :cond_2
++
++    .line 88
++    invoke-virtual {v0}, Lmiui/app/AlertDialog;->getContext()Landroid/content/Context;
++
++    move-result-object v1
++
++    .line 89
++    new-instance v3, Landroid/widget/CheckBox;
++
++    invoke-direct {v3, v1}, Landroid/widget/CheckBox;-><init>(Landroid/content/Context;)V
++
++    .line 90
++    iget-boolean v4, p0, Lmiui/app/AlertDialog$Builder;->mCheckBoxChecked:Z
++
++    invoke-virtual {v3, v4}, Landroid/widget/CheckBox;->setChecked(Z)V
++
++    .line 91
++    iget-object p0, p0, Lmiui/app/AlertDialog$Builder;->mCheckBoxMessage:Ljava/lang/CharSequence;
++
++    invoke-virtual {v3, p0}, Landroid/widget/CheckBox;->setText(Ljava/lang/CharSequence;)V
++
++    .line 92
++    new-instance p0, Landroid/widget/FrameLayout;
++
++    invoke-direct {p0, v1}, Landroid/widget/FrameLayout;-><init>(Landroid/content/Context;)V
++
++    .line 93
++    invoke-virtual {v1}, Landroid/content/Context;->getResources()Landroid/content/res/Resources;
++
++    move-result-object v1
++
++    invoke-virtual {v1}, Landroid/content/res/Resources;->getDisplayMetrics()Landroid/util/DisplayMetrics;
++
++    move-result-object v1
++
++    iget v1, v1, Landroid/util/DisplayMetrics;->density:F
++
++    const/high16 v4, 0x41a00000    # 20.0f
++
++    mul-float/2addr v1, v4
++
++    float-to-int v1, v1
++
++    .line 94
++    invoke-virtual {p0, v1, v2, v1, v2}, Landroid/widget/FrameLayout;->setPadding(IIII)V
++
++    .line 95
++    invoke-virtual {p0, v3}, Landroid/widget/FrameLayout;->addView(Landroid/view/View;)V
++
++    .line 96
++    invoke-virtual {v0, p0}, Lmiui/app/AlertDialog;->setView(Landroid/view/View;)V
++
++    .line 97
++    invoke-static {v0, v3}, Lmiui/app/AlertDialog;->access$002(Lmiui/app/AlertDialog;Landroid/widget/CheckBox;)Landroid/widget/CheckBox;
++
++    :cond_2
++    return-object v0
++.end method
++
++.method public bridge synthetic setAdapter(Landroid/widget/ListAdapter;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2}, Lmiui/app/AlertDialog$Builder;->setAdapter(Landroid/widget/ListAdapter;Landroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setAdapter(Landroid/widget/ListAdapter;Landroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 124
++    invoke-super {p0, p1, p2}, Landroid/app/AlertDialog$Builder;->setAdapter(Landroid/widget/ListAdapter;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setCancelable(Z)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000
++        }
++        names = {
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1}, Lmiui/app/AlertDialog$Builder;->setCancelable(Z)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setCancelable(Z)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 130
++    invoke-super {p0, p1}, Landroid/app/AlertDialog$Builder;->setCancelable(Z)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public setCheckBox(ZLjava/lang/CharSequence;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 50
++    iput-boolean p1, p0, Lmiui/app/AlertDialog$Builder;->mCheckBoxChecked:Z
++
++    .line 51
++    iput-object p2, p0, Lmiui/app/AlertDialog$Builder;->mCheckBoxMessage:Ljava/lang/CharSequence;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setCursor(Landroid/database/Cursor;Landroid/content/DialogInterface$OnClickListener;Ljava/lang/String;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2, p3}, Lmiui/app/AlertDialog$Builder;->setCursor(Landroid/database/Cursor;Landroid/content/DialogInterface$OnClickListener;Ljava/lang/String;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setCursor(Landroid/database/Cursor;Landroid/content/DialogInterface$OnClickListener;Ljava/lang/String;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 137
++    invoke-super {p0, p1, p2, p3}, Landroid/app/AlertDialog$Builder;->setCursor(Landroid/database/Cursor;Landroid/content/DialogInterface$OnClickListener;Ljava/lang/String;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setCustomTitle(Landroid/view/View;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000
++        }
++        names = {
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1}, Lmiui/app/AlertDialog$Builder;->setCustomTitle(Landroid/view/View;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setCustomTitle(Landroid/view/View;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 143
++    invoke-super {p0, p1}, Landroid/app/AlertDialog$Builder;->setCustomTitle(Landroid/view/View;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setIcon(I)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000
++        }
++        names = {
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1}, Lmiui/app/AlertDialog$Builder;->setIcon(I)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setIcon(Landroid/graphics/drawable/Drawable;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000
++        }
++        names = {
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1}, Lmiui/app/AlertDialog$Builder;->setIcon(Landroid/graphics/drawable/Drawable;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setIcon(I)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 149
++    invoke-super {p0, p1}, Landroid/app/AlertDialog$Builder;->setIcon(I)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public setIcon(Landroid/graphics/drawable/Drawable;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 155
++    invoke-super {p0, p1}, Landroid/app/AlertDialog$Builder;->setIcon(Landroid/graphics/drawable/Drawable;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setIconAttribute(I)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000
++        }
++        names = {
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1}, Lmiui/app/AlertDialog$Builder;->setIconAttribute(I)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setIconAttribute(I)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 161
++    invoke-super {p0, p1}, Landroid/app/AlertDialog$Builder;->setIconAttribute(I)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setItems(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2}, Lmiui/app/AlertDialog$Builder;->setItems(ILandroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setItems([Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2}, Lmiui/app/AlertDialog$Builder;->setItems([Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setItems(ILandroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 167
++    invoke-super {p0, p1, p2}, Landroid/app/AlertDialog$Builder;->setItems(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public setItems([Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 173
++    invoke-super {p0, p1, p2}, Landroid/app/AlertDialog$Builder;->setItems([Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setMessage(I)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000
++        }
++        names = {
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1}, Lmiui/app/AlertDialog$Builder;->setMessage(I)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setMessage(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000
++        }
++        names = {
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1}, Lmiui/app/AlertDialog$Builder;->setMessage(Ljava/lang/CharSequence;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setMessage(I)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 179
++    invoke-super {p0, p1}, Landroid/app/AlertDialog$Builder;->setMessage(I)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public setMessage(Ljava/lang/CharSequence;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 185
++    invoke-super {p0, p1}, Landroid/app/AlertDialog$Builder;->setMessage(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setMultiChoiceItems(I[ZLandroid/content/DialogInterface$OnMultiChoiceClickListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2, p3}, Lmiui/app/AlertDialog$Builder;->setMultiChoiceItems(I[ZLandroid/content/DialogInterface$OnMultiChoiceClickListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setMultiChoiceItems(Landroid/database/Cursor;Ljava/lang/String;Ljava/lang/String;Landroid/content/DialogInterface$OnMultiChoiceClickListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000,
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null,
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2, p3, p4}, Lmiui/app/AlertDialog$Builder;->setMultiChoiceItems(Landroid/database/Cursor;Ljava/lang/String;Ljava/lang/String;Landroid/content/DialogInterface$OnMultiChoiceClickListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setMultiChoiceItems([Ljava/lang/CharSequence;[ZLandroid/content/DialogInterface$OnMultiChoiceClickListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2, p3}, Lmiui/app/AlertDialog$Builder;->setMultiChoiceItems([Ljava/lang/CharSequence;[ZLandroid/content/DialogInterface$OnMultiChoiceClickListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setMultiChoiceItems(I[ZLandroid/content/DialogInterface$OnMultiChoiceClickListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 192
++    invoke-super {p0, p1, p2, p3}, Landroid/app/AlertDialog$Builder;->setMultiChoiceItems(I[ZLandroid/content/DialogInterface$OnMultiChoiceClickListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public setMultiChoiceItems(Landroid/database/Cursor;Ljava/lang/String;Ljava/lang/String;Landroid/content/DialogInterface$OnMultiChoiceClickListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 199
++    invoke-super {p0, p1, p2, p3, p4}, Landroid/app/AlertDialog$Builder;->setMultiChoiceItems(Landroid/database/Cursor;Ljava/lang/String;Ljava/lang/String;Landroid/content/DialogInterface$OnMultiChoiceClickListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public setMultiChoiceItems([Ljava/lang/CharSequence;[ZLandroid/content/DialogInterface$OnMultiChoiceClickListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 206
++    invoke-super {p0, p1, p2, p3}, Landroid/app/AlertDialog$Builder;->setMultiChoiceItems([Ljava/lang/CharSequence;[ZLandroid/content/DialogInterface$OnMultiChoiceClickListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setNegativeButton(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2}, Lmiui/app/AlertDialog$Builder;->setNegativeButton(ILandroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setNegativeButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2}, Lmiui/app/AlertDialog$Builder;->setNegativeButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setNegativeButton(ILandroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 212
++    invoke-super {p0, p1, p2}, Landroid/app/AlertDialog$Builder;->setNegativeButton(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public setNegativeButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 219
++    invoke-super {p0, p1, p2}, Landroid/app/AlertDialog$Builder;->setNegativeButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setNeutralButton(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2}, Lmiui/app/AlertDialog$Builder;->setNeutralButton(ILandroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setNeutralButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2}, Lmiui/app/AlertDialog$Builder;->setNeutralButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setNeutralButton(ILandroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 225
++    invoke-super {p0, p1, p2}, Landroid/app/AlertDialog$Builder;->setNeutralButton(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public setNeutralButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 232
++    invoke-super {p0, p1, p2}, Landroid/app/AlertDialog$Builder;->setNeutralButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setOnCancelListener(Landroid/content/DialogInterface$OnCancelListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000
++        }
++        names = {
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1}, Lmiui/app/AlertDialog$Builder;->setOnCancelListener(Landroid/content/DialogInterface$OnCancelListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setOnCancelListener(Landroid/content/DialogInterface$OnCancelListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 238
++    invoke-super {p0, p1}, Landroid/app/AlertDialog$Builder;->setOnCancelListener(Landroid/content/DialogInterface$OnCancelListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setOnDismissListener(Landroid/content/DialogInterface$OnDismissListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000
++        }
++        names = {
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1}, Lmiui/app/AlertDialog$Builder;->setOnDismissListener(Landroid/content/DialogInterface$OnDismissListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setOnDismissListener(Landroid/content/DialogInterface$OnDismissListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 244
++    invoke-super {p0, p1}, Landroid/app/AlertDialog$Builder;->setOnDismissListener(Landroid/content/DialogInterface$OnDismissListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setOnItemSelectedListener(Landroid/widget/AdapterView$OnItemSelectedListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000
++        }
++        names = {
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1}, Lmiui/app/AlertDialog$Builder;->setOnItemSelectedListener(Landroid/widget/AdapterView$OnItemSelectedListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setOnItemSelectedListener(Landroid/widget/AdapterView$OnItemSelectedListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 250
++    invoke-super {p0, p1}, Landroid/app/AlertDialog$Builder;->setOnItemSelectedListener(Landroid/widget/AdapterView$OnItemSelectedListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setOnKeyListener(Landroid/content/DialogInterface$OnKeyListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000
++        }
++        names = {
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1}, Lmiui/app/AlertDialog$Builder;->setOnKeyListener(Landroid/content/DialogInterface$OnKeyListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setOnKeyListener(Landroid/content/DialogInterface$OnKeyListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 256
++    invoke-super {p0, p1}, Landroid/app/AlertDialog$Builder;->setOnKeyListener(Landroid/content/DialogInterface$OnKeyListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setPositiveButton(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2}, Lmiui/app/AlertDialog$Builder;->setPositiveButton(ILandroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setPositiveButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2}, Lmiui/app/AlertDialog$Builder;->setPositiveButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setPositiveButton(ILandroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 262
++    invoke-super {p0, p1, p2}, Landroid/app/AlertDialog$Builder;->setPositiveButton(ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public setPositiveButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 269
++    invoke-super {p0, p1, p2}, Landroid/app/AlertDialog$Builder;->setPositiveButton(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setSingleChoiceItems(IILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2, p3}, Lmiui/app/AlertDialog$Builder;->setSingleChoiceItems(IILandroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setSingleChoiceItems(Landroid/database/Cursor;ILjava/lang/String;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000,
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null,
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2, p3, p4}, Lmiui/app/AlertDialog$Builder;->setSingleChoiceItems(Landroid/database/Cursor;ILjava/lang/String;Landroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setSingleChoiceItems(Landroid/widget/ListAdapter;ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2, p3}, Lmiui/app/AlertDialog$Builder;->setSingleChoiceItems(Landroid/widget/ListAdapter;ILandroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setSingleChoiceItems([Ljava/lang/CharSequence;ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000,
++            0x1000,
++            0x1000
++        }
++        names = {
++            null,
++            null,
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1, p2, p3}, Lmiui/app/AlertDialog$Builder;->setSingleChoiceItems([Ljava/lang/CharSequence;ILandroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setSingleChoiceItems(IILandroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 276
++    invoke-super {p0, p1, p2, p3}, Landroid/app/AlertDialog$Builder;->setSingleChoiceItems(IILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public setSingleChoiceItems(Landroid/database/Cursor;ILjava/lang/String;Landroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 283
++    invoke-super {p0, p1, p2, p3, p4}, Landroid/app/AlertDialog$Builder;->setSingleChoiceItems(Landroid/database/Cursor;ILjava/lang/String;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public setSingleChoiceItems(Landroid/widget/ListAdapter;ILandroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 290
++    invoke-super {p0, p1, p2, p3}, Landroid/app/AlertDialog$Builder;->setSingleChoiceItems(Landroid/widget/ListAdapter;ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public setSingleChoiceItems([Ljava/lang/CharSequence;ILandroid/content/DialogInterface$OnClickListener;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 297
++    invoke-super {p0, p1, p2, p3}, Landroid/app/AlertDialog$Builder;->setSingleChoiceItems([Ljava/lang/CharSequence;ILandroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setTitle(I)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000
++        }
++        names = {
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1}, Lmiui/app/AlertDialog$Builder;->setTitle(I)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000
++        }
++        names = {
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1}, Lmiui/app/AlertDialog$Builder;->setTitle(Ljava/lang/CharSequence;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setTitle(I)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 303
++    invoke-super {p0, p1}, Landroid/app/AlertDialog$Builder;->setTitle(I)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public setTitle(Ljava/lang/CharSequence;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 309
++    invoke-super {p0, p1}, Landroid/app/AlertDialog$Builder;->setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setView(I)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000
++        }
++        names = {
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1}, Lmiui/app/AlertDialog$Builder;->setView(I)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public bridge synthetic setView(Landroid/view/View;)Landroid/app/AlertDialog$Builder;
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x1000
++        }
++        names = {
++            null
++        }
++    .end annotation
++
++    .line 36
++    invoke-virtual {p0, p1}, Lmiui/app/AlertDialog$Builder;->setView(Landroid/view/View;)Lmiui/app/AlertDialog$Builder;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public setView(I)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 315
++    invoke-super {p0, p1}, Landroid/app/AlertDialog$Builder;->setView(I)Landroid/app/AlertDialog$Builder;
++
++    const/4 p1, 0x1
++
++    .line 316
++    iput-boolean p1, p0, Lmiui/app/AlertDialog$Builder;->mHasView:Z
++
++    return-object p0
++.end method
++
++.method public setView(Landroid/view/View;)Lmiui/app/AlertDialog$Builder;
++    .locals 0
++
++    .line 322
++    invoke-super {p0, p1}, Landroid/app/AlertDialog$Builder;->setView(Landroid/view/View;)Landroid/app/AlertDialog$Builder;
++
++    const/4 p1, 0x1
++
++    .line 323
++    iput-boolean p1, p0, Lmiui/app/AlertDialog$Builder;->mHasView:Z
++
++    return-object p0
++.end method
++
++.method public bridge synthetic show()Landroid/app/AlertDialog;
++    .locals 0
++
++    .line 36
++    invoke-virtual {p0}, Lmiui/app/AlertDialog$Builder;->show()Lmiui/app/AlertDialog;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public show()Lmiui/app/AlertDialog;
++    .locals 0
++
++    .line 104
++    invoke-virtual {p0}, Lmiui/app/AlertDialog$Builder;->create()Lmiui/app/AlertDialog;
++
++    move-result-object p0
++
++    .line 105
++    invoke-virtual {p0}, Lmiui/app/AlertDialog;->show()V
++
++    return-object p0
++.end method
+diff --git a/smali_classes4/miui/app/AlertDialog.smali b/smali_classes4/miui/app/AlertDialog.smali
+new file mode 100644
+index 00000000..62343b6f
+--- /dev/null
++++ b/smali_classes4/miui/app/AlertDialog.smali
+@@ -0,0 +1,65 @@
++.class public Lmiui/app/AlertDialog;
++.super Landroid/app/AlertDialog;
++.source "AlertDialog.java"
++
++
++# annotations
++.annotation system Ldalvik/annotation/MemberClasses;
++    value = {
++        Lmiui/app/AlertDialog$Builder;
++    }
++.end annotation
++
++
++# static fields
++.field private static final TAG:Ljava/lang/String; = "MiuiCompatAlertDialog"
++
++
++# instance fields
++.field private mCheckBox:Landroid/widget/CheckBox;
++
++
++# direct methods
++.method protected constructor <init>(Landroid/content/Context;I)V
++    .locals 0
++
++    .line 29
++    invoke-direct {p0, p1, p2}, Landroid/app/AlertDialog;-><init>(Landroid/content/Context;I)V
++
++    return-void
++.end method
++
++.method static synthetic access$002(Lmiui/app/AlertDialog;Landroid/widget/CheckBox;)Landroid/widget/CheckBox;
++    .locals 0
++
++    .line 23
++    iput-object p1, p0, Lmiui/app/AlertDialog;->mCheckBox:Landroid/widget/CheckBox;
++
++    return-object p1
++.end method
++
++
++# virtual methods
++.method public isChecked()Z
++    .locals 0
++
++    .line 33
++    iget-object p0, p0, Lmiui/app/AlertDialog;->mCheckBox:Landroid/widget/CheckBox;
++
++    if-eqz p0, :cond_0
++
++    invoke-virtual {p0}, Landroid/widget/CheckBox;->isChecked()Z
++
++    move-result p0
++
++    if-eqz p0, :cond_0
++
++    const/4 p0, 0x1
++
++    return p0
++
++    :cond_0
++    const/4 p0, 0x0
++
++    return p0
++.end method
+diff --git a/smali_classes4/miui/app/ProgressDialog.smali b/smali_classes4/miui/app/ProgressDialog.smali
+new file mode 100644
+index 00000000..d3450cd7
+--- /dev/null
++++ b/smali_classes4/miui/app/ProgressDialog.smali
+@@ -0,0 +1,14 @@
++.class public Lmiui/app/ProgressDialog;
++.super Landroid/app/ProgressDialog;
++.source "ProgressDialog.java"
++
++
++# direct methods
++.method public constructor <init>(Landroid/content/Context;)V
++    .locals 0
++
++    .line 12
++    invoke-direct {p0, p1}, Landroid/app/ProgressDialog;-><init>(Landroid/content/Context;)V
++
++    return-void
++.end method
+diff --git a/smali_classes4/miui/core/view/NestedScrollingParent.smali b/smali_classes4/miui/core/view/NestedScrollingParent.smali
+new file mode 100644
+index 00000000..2ed583e6
+--- /dev/null
++++ b/smali_classes4/miui/core/view/NestedScrollingParent.smali
+@@ -0,0 +1,26 @@
++.class public interface abstract Lmiui/core/view/NestedScrollingParent;
++.super Ljava/lang/Object;
++.source "NestedScrollingParent.java"
++
++
++# virtual methods
++.method public abstract onNestedFling(Landroid/view/View;FFZ)Z
++.end method
++
++.method public abstract onNestedPreFling(Landroid/view/View;FF)Z
++.end method
++
++.method public abstract onNestedPreScroll(Landroid/view/View;II[I)V
++.end method
++
++.method public abstract onNestedScroll(Landroid/view/View;IIII)V
++.end method
++
++.method public abstract onNestedScrollAccepted(Landroid/view/View;Landroid/view/View;I)V
++.end method
++
++.method public abstract onStartNestedScroll(Landroid/view/View;Landroid/view/View;I)Z
++.end method
++
++.method public abstract onStopNestedScroll(Landroid/view/View;)V
++.end method
+diff --git a/smali_classes4/miui/core/view/NestedScrollingParent2.smali b/smali_classes4/miui/core/view/NestedScrollingParent2.smali
+new file mode 100644
+index 00000000..2ba36595
+--- /dev/null
++++ b/smali_classes4/miui/core/view/NestedScrollingParent2.smali
+@@ -0,0 +1,23 @@
++.class public interface abstract Lmiui/core/view/NestedScrollingParent2;
++.super Ljava/lang/Object;
++.source "NestedScrollingParent2.java"
++
++# interfaces
++.implements Lmiui/core/view/NestedScrollingParent;
++
++
++# virtual methods
++.method public abstract onNestedPreScroll(Landroid/view/View;II[II)V
++.end method
++
++.method public abstract onNestedScroll(Landroid/view/View;IIIII)V
++.end method
++
++.method public abstract onNestedScrollAccepted(Landroid/view/View;Landroid/view/View;II)V
++.end method
++
++.method public abstract onStartNestedScroll(Landroid/view/View;Landroid/view/View;II)Z
++.end method
++
++.method public abstract onStopNestedScroll(Landroid/view/View;I)V
++.end method
+diff --git a/smali_classes4/miui/core/view/NestedScrollingParent3.smali b/smali_classes4/miui/core/view/NestedScrollingParent3.smali
+new file mode 100644
+index 00000000..5d8108a9
+--- /dev/null
++++ b/smali_classes4/miui/core/view/NestedScrollingParent3.smali
+@@ -0,0 +1,11 @@
++.class public interface abstract Lmiui/core/view/NestedScrollingParent3;
++.super Ljava/lang/Object;
++.source "NestedScrollingParent3.java"
++
++# interfaces
++.implements Lmiui/core/view/NestedScrollingParent2;
++
++
++# virtual methods
++.method public abstract onNestedScroll(Landroid/view/View;IIIII[I)V
++.end method
+diff --git a/smali_classes4/miui/hardware/display/DisplayFeatureManager.smali b/smali_classes4/miui/hardware/display/DisplayFeatureManager.smali
+new file mode 100644
+index 00000000..2ed58c41
+--- /dev/null
++++ b/smali_classes4/miui/hardware/display/DisplayFeatureManager.smali
+@@ -0,0 +1,48 @@
++.class public Lmiui/hardware/display/DisplayFeatureManager;
++.super Ljava/lang/Object;
++.source "DisplayFeatureManager.java"
++
++
++# static fields
++.field private static final sInstance:Lmiui/hardware/display/DisplayFeatureManager;
++
++
++# direct methods
++.method static constructor <clinit>()V
++    .locals 1
++
++    .line 10
++    new-instance v0, Lmiui/hardware/display/DisplayFeatureManager;
++
++    invoke-direct {v0}, Lmiui/hardware/display/DisplayFeatureManager;-><init>()V
++
++    sput-object v0, Lmiui/hardware/display/DisplayFeatureManager;->sInstance:Lmiui/hardware/display/DisplayFeatureManager;
++
++    return-void
++.end method
++
++.method public constructor <init>()V
++    .locals 0
++
++    .line 9
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++.method public static getInstance()Lmiui/hardware/display/DisplayFeatureManager;
++    .locals 1
++
++    .line 13
++    sget-object v0, Lmiui/hardware/display/DisplayFeatureManager;->sInstance:Lmiui/hardware/display/DisplayFeatureManager;
++
++    return-object v0
++.end method
++
++
++# virtual methods
++.method public setScreenEffect(II)V
++    .locals 0
++
++    return-void
++.end method
+diff --git a/smali_classes4/miui/maml/animation/interpolater/ExpoEaseOutInterpolater.smali b/smali_classes4/miui/maml/animation/interpolater/ExpoEaseOutInterpolater.smali
+new file mode 100644
+index 00000000..33f257a3
+--- /dev/null
++++ b/smali_classes4/miui/maml/animation/interpolater/ExpoEaseOutInterpolater.smali
+@@ -0,0 +1,55 @@
++.class public Lmiui/maml/animation/interpolater/ExpoEaseOutInterpolater;
++.super Ljava/lang/Object;
++.source "ExpoEaseOutInterpolater.java"
++
++# interfaces
++.implements Landroid/view/animation/Interpolator;
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public getInterpolation(F)F
++    .locals 2
++
++    const/high16 p0, 0x3f800000    # 1.0f
++
++    cmpl-float v0, p1, p0
++
++    if-nez v0, :cond_0
++
++    return p0
++
++    :cond_0
++    const/high16 p0, -0x3ee00000    # -10.0f
++
++    mul-float/2addr p1, p0
++
++    float-to-double p0, p1
++
++    const-wide/high16 v0, 0x4000000000000000L    # 2.0
++
++    .line 16
++    invoke-static {v0, v1, p0, p1}, Ljava/lang/Math;->pow(DD)D
++
++    move-result-wide p0
++
++    neg-double p0, p0
++
++    const-wide/high16 v0, 0x3ff0000000000000L    # 1.0
++
++    add-double/2addr p0, v0
++
++    double-to-float p0, p0
++
++    return p0
++.end method
+diff --git a/smali_classes4/miui/os/Build.smali b/smali_classes4/miui/os/Build.smali
+new file mode 100644
+index 00000000..56e4b076
+--- /dev/null
++++ b/smali_classes4/miui/os/Build.smali
+@@ -0,0 +1,210 @@
++.class public Lmiui/os/Build;
++.super Landroid/os/Build;
++.source "Build.java"
++
++
++# static fields
++.field public static final IS_ALPHA_BUILD:Z
++
++.field public static final IS_CM_CUSTOMIZATION:Z
++
++.field public static final IS_CM_CUSTOMIZATION_TEST:Z
++
++.field public static final IS_DEBUGGABLE:Z
++
++.field public static final IS_INTERNATIONAL_BUILD:Z
++
++.field public static final IS_STABLE_VERSION:Z
++
++
++# direct methods
++.method static constructor <clinit>()V
++    .locals 8
++
++    .line 14
++    const-string v0, "ro.product.mod_device"
++
++    const-string v1, ""
++
++    invoke-static {v0, v1}, Landroid/os/SystemProperties;->get(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
++
++    move-result-object v2
++
++    const-string v3, "_alpha"
++
++    invoke-virtual {v2, v3}, Ljava/lang/String;->endsWith(Ljava/lang/String;)Z
++
++    move-result v2
++
++    sput-boolean v2, Lmiui/os/Build;->IS_ALPHA_BUILD:Z
++
++    .line 15
++    const-string v2, "ro.carrier.name"
++
++    .line 16
++    invoke-static {v2}, Landroid/os/SystemProperties;->get(Ljava/lang/String;)Ljava/lang/String;
++
++    move-result-object v2
++
++    const-string v3, "cm"
++
++    invoke-virtual {v3, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
++
++    move-result v2
++
++    const/4 v4, 0x1
++
++    const/4 v5, 0x0
++
++    if-eqz v2, :cond_1
++
++    const-string v2, "cn_chinamobile"
++
++    .line 17
++    const-string v6, "ro.miui.cust_variant"
++
++    invoke-static {v6}, Landroid/os/SystemProperties;->get(Ljava/lang/String;)Ljava/lang/String;
++
++    move-result-object v7
++
++    invoke-virtual {v2, v7}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
++
++    move-result v2
++
++    if-nez v2, :cond_0
++
++    const-string v2, "cn_cta"
++
++    .line 18
++    invoke-static {v6}, Landroid/os/SystemProperties;->get(Ljava/lang/String;)Ljava/lang/String;
++
++    move-result-object v6
++
++    invoke-virtual {v2, v6}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
++
++    move-result v2
++
++    if-eqz v2, :cond_1
++
++    :cond_0
++    move v2, v4
++
++    goto :goto_0
++
++    :cond_1
++    move v2, v5
++
++    :goto_0
++    sput-boolean v2, Lmiui/os/Build;->IS_CM_CUSTOMIZATION:Z
++
++    .line 19
++    const-string v2, "ro.cust.test"
++
++    .line 20
++    invoke-static {v2}, Landroid/os/SystemProperties;->get(Ljava/lang/String;)Ljava/lang/String;
++
++    move-result-object v2
++
++    invoke-virtual {v3, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
++
++    move-result v2
++
++    sput-boolean v2, Lmiui/os/Build;->IS_CM_CUSTOMIZATION_TEST:Z
++
++    .line 21
++    const-string v2, "ro.debuggable"
++
++    invoke-static {v2, v5}, Landroid/os/SystemProperties;->getInt(Ljava/lang/String;I)I
++
++    move-result v2
++
++    if-ne v2, v4, :cond_2
++
++    move v2, v4
++
++    goto :goto_1
++
++    :cond_2
++    move v2, v5
++
++    :goto_1
++    sput-boolean v2, Lmiui/os/Build;->IS_DEBUGGABLE:Z
++
++    .line 23
++    invoke-static {v0, v1}, Landroid/os/SystemProperties;->get(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
++
++    move-result-object v0
++
++    const-string v1, "_global"
++
++    invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
++
++    move-result v0
++
++    sput-boolean v0, Lmiui/os/Build;->IS_INTERNATIONAL_BUILD:Z
++
++    .line 24
++    const-string v0, "user"
++
++    sget-object v1, Lmiui/os/Build;->TYPE:Ljava/lang/String;
++
++    invoke-virtual {v0, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
++
++    move-result v0
++
++    if-eqz v0, :cond_3
++
++    sget-object v0, Landroid/os/Build$VERSION;->INCREMENTAL:Ljava/lang/String;
++
++    .line 25
++    invoke-static {v0}, Landroid/text/TextUtils;->isEmpty(Ljava/lang/CharSequence;)Z
++
++    move-result v0
++
++    if-nez v0, :cond_3
++
++    sget-object v0, Landroid/os/Build$VERSION;->INCREMENTAL:Ljava/lang/String;
++
++    const-string v1, "^V(\\d+.)+([A-Z]+\\d{0,}.?)+(\\d+.?){0,}$"
++
++    .line 26
++    invoke-virtual {v0, v1}, Ljava/lang/String;->matches(Ljava/lang/String;)Z
++
++    move-result v0
++
++    if-eqz v0, :cond_3
++
++    goto :goto_2
++
++    :cond_3
++    move v4, v5
++
++    :goto_2
++    sput-boolean v4, Lmiui/os/Build;->IS_STABLE_VERSION:Z
++
++    return-void
++.end method
++
++.method public constructor <init>()V
++    .locals 0
++
++    .line 12
++    invoke-direct {p0}, Landroid/os/Build;-><init>()V
++
++    return-void
++.end method
++
++.method public static getRegion()Ljava/lang/String;
++    .locals 2
++
++    .line 29
++    const-string v0, "ro.miui.region"
++
++    const-string v1, "CN"
++
++    invoke-static {v0, v1}, Landroid/os/SystemProperties;->get(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
++
++    move-result-object v0
++
++    return-object v0
++.end method
+diff --git a/smali_classes4/miui/os/Environment.smali b/smali_classes4/miui/os/Environment.smali
+new file mode 100644
+index 00000000..d6c62bb6
+--- /dev/null
++++ b/smali_classes4/miui/os/Environment.smali
+@@ -0,0 +1,25 @@
++.class public Lmiui/os/Environment;
++.super Ljava/lang/Object;
++.source "Environment.java"
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++.method public static getExternalStorageDirectory()Ljava/io/File;
++    .locals 1
++
++    .line 12
++    invoke-static {}, Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;
++
++    move-result-object v0
++
++    return-object v0
++.end method
+diff --git a/smali_classes4/miui/reflect/Field.smali b/smali_classes4/miui/reflect/Field.smali
+new file mode 100644
+index 00000000..451a8e43
+--- /dev/null
++++ b/smali_classes4/miui/reflect/Field.smali
+@@ -0,0 +1,181 @@
++.class public Lmiui/reflect/Field;
++.super Ljava/lang/Object;
++.source "Field.java"
++
++
++# instance fields
++.field private final mField:Ljava/lang/reflect/Field;
++
++
++# direct methods
++.method private constructor <init>(Ljava/lang/reflect/Field;)V
++    .locals 0
++
++    .line 12
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    .line 13
++    iput-object p1, p0, Lmiui/reflect/Field;->mField:Ljava/lang/reflect/Field;
++
++    const/4 p0, 0x1
++
++    .line 14
++    invoke-virtual {p1, p0}, Ljava/lang/reflect/Field;->setAccessible(Z)V
++
++    return-void
++.end method
++
++.method public static of(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/String;)Lmiui/reflect/Field;
++    .locals 3
++    .annotation system Ldalvik/annotation/Signature;
++        value = {
++            "(",
++            "Ljava/lang/Class<",
++            "*>;",
++            "Ljava/lang/String;",
++            "Ljava/lang/String;",
++            ")",
++            "Lmiui/reflect/Field;"
++        }
++    .end annotation
++
++    .line 18
++    invoke-static {p2}, Lmiui/reflect/ReflectUtils;->typeOf(Ljava/lang/String;)Ljava/lang/Class;
++
++    move-result-object p2
++
++    move-object v0, p0
++
++    :goto_0
++    if-eqz v0, :cond_1
++
++    .line 21
++    :try_start_0
++    invoke-virtual {v0, p1}, Ljava/lang/Class;->getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;
++
++    move-result-object v1
++
++    .line 22
++    invoke-virtual {v1}, Ljava/lang/reflect/Field;->getType()Ljava/lang/Class;
++
++    move-result-object v2
++
++    if-ne v2, p2, :cond_0
++
++    .line 23
++    new-instance v2, Lmiui/reflect/Field;
++
++    invoke-direct {v2, v1}, Lmiui/reflect/Field;-><init>(Ljava/lang/reflect/Field;)V
++    :try_end_0
++    .catch Ljava/lang/NoSuchFieldException; {:try_start_0 .. :try_end_0} :catch_0
++
++    return-object v2
++
++    .line 19
++    :catch_0
++    :cond_0
++    invoke-virtual {v0}, Ljava/lang/Class;->getSuperclass()Ljava/lang/Class;
++
++    move-result-object v0
++
++    goto :goto_0
++
++    .line 29
++    :cond_1
++    new-instance p2, Lmiui/reflect/NoSuchFieldException;
++
++    new-instance v0, Ljava/lang/StringBuilder;
++
++    const-string v1, "Field "
++
++    invoke-direct {v0, v1}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
++
++    invoke-virtual {v0, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    const-string p1, " not found in "
++
++    invoke-virtual {v0, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {p0}, Ljava/lang/Class;->getName()Ljava/lang/String;
++
++    move-result-object p0
++
++    invoke-virtual {v0, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object p0
++
++    invoke-direct {p2, p0}, Lmiui/reflect/NoSuchFieldException;-><init>(Ljava/lang/String;)V
++
++    throw p2
++.end method
++
++.method public static of(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lmiui/reflect/Field;
++    .locals 0
++
++    .line 33
++    invoke-static {p0}, Lmiui/reflect/ReflectUtils;->loadClass(Ljava/lang/String;)Ljava/lang/Class;
++
++    move-result-object p0
++
++    invoke-static {p0, p1, p2}, Lmiui/reflect/Field;->of(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/String;)Lmiui/reflect/Field;
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++
++# virtual methods
++.method public get(Ljava/lang/Object;)Ljava/lang/Object;
++    .locals 0
++
++    .line 38
++    :try_start_0
++    iget-object p0, p0, Lmiui/reflect/Field;->mField:Ljava/lang/reflect/Field;
++
++    invoke-virtual {p0, p1}, Ljava/lang/reflect/Field;->get(Ljava/lang/Object;)Ljava/lang/Object;
++
++    move-result-object p0
++    :try_end_0
++    .catch Ljava/lang/IllegalAccessException; {:try_start_0 .. :try_end_0} :catch_0
++
++    return-object p0
++
++    :catch_0
++    move-exception p0
++
++    .line 40
++    new-instance p1, Ljava/lang/IllegalArgumentException;
++
++    invoke-direct {p1, p0}, Ljava/lang/IllegalArgumentException;-><init>(Ljava/lang/Throwable;)V
++
++    throw p1
++.end method
++
++.method public getInt(Ljava/lang/Object;)I
++    .locals 0
++
++    .line 46
++    :try_start_0
++    iget-object p0, p0, Lmiui/reflect/Field;->mField:Ljava/lang/reflect/Field;
++
++    invoke-virtual {p0, p1}, Ljava/lang/reflect/Field;->getInt(Ljava/lang/Object;)I
++
++    move-result p0
++    :try_end_0
++    .catch Ljava/lang/IllegalAccessException; {:try_start_0 .. :try_end_0} :catch_0
++
++    return p0
++
++    :catch_0
++    move-exception p0
++
++    .line 48
++    new-instance p1, Ljava/lang/IllegalArgumentException;
++
++    invoke-direct {p1, p0}, Ljava/lang/IllegalArgumentException;-><init>(Ljava/lang/Throwable;)V
++
++    throw p1
++.end method
+diff --git a/smali_classes4/miui/reflect/Method.smali b/smali_classes4/miui/reflect/Method.smali
+new file mode 100644
+index 00000000..f158f0aa
+--- /dev/null
++++ b/smali_classes4/miui/reflect/Method.smali
+@@ -0,0 +1,209 @@
++.class public Lmiui/reflect/Method;
++.super Ljava/lang/Object;
++.source "Method.java"
++
++
++# instance fields
++.field private final mMethod:Ljava/lang/reflect/Method;
++
++
++# direct methods
++.method private constructor <init>(Ljava/lang/reflect/Method;)V
++    .locals 0
++
++    .line 14
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    .line 15
++    iput-object p1, p0, Lmiui/reflect/Method;->mMethod:Ljava/lang/reflect/Method;
++
++    const/4 p0, 0x1
++
++    .line 16
++    invoke-virtual {p1, p0}, Ljava/lang/reflect/Method;->setAccessible(Z)V
++
++    return-void
++.end method
++
++.method private call(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
++    .locals 0
++
++    .line 39
++    :try_start_0
++    iget-object p0, p0, Lmiui/reflect/Method;->mMethod:Ljava/lang/reflect/Method;
++
++    invoke-virtual {p0, p1, p2}, Ljava/lang/reflect/Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
++
++    move-result-object p0
++    :try_end_0
++    .catch Ljava/lang/reflect/InvocationTargetException; {:try_start_0 .. :try_end_0} :catch_1
++    .catch Ljava/lang/IllegalAccessException; {:try_start_0 .. :try_end_0} :catch_0
++
++    return-object p0
++
++    :catch_0
++    move-exception p0
++
++    .line 50
++    new-instance p1, Ljava/lang/IllegalArgumentException;
++
++    invoke-direct {p1, p0}, Ljava/lang/IllegalArgumentException;-><init>(Ljava/lang/Throwable;)V
++
++    throw p1
++
++    :catch_1
++    move-exception p0
++
++    .line 41
++    invoke-virtual {p0}, Ljava/lang/reflect/InvocationTargetException;->getCause()Ljava/lang/Throwable;
++
++    move-result-object p0
++
++    .line 42
++    instance-of p1, p0, Ljava/lang/RuntimeException;
++
++    if-nez p1, :cond_1
++
++    .line 45
++    instance-of p1, p0, Ljava/lang/Error;
++
++    if-eqz p1, :cond_0
++
++    .line 46
++    check-cast p0, Ljava/lang/Error;
++
++    throw p0
++
++    .line 48
++    :cond_0
++    new-instance p1, Ljava/lang/IllegalArgumentException;
++
++    invoke-direct {p1, p0}, Ljava/lang/IllegalArgumentException;-><init>(Ljava/lang/Throwable;)V
++
++    throw p1
++
++    .line 43
++    :cond_1
++    check-cast p0, Ljava/lang/RuntimeException;
++
++    throw p0
++.end method
++
++.method public static of(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/String;)Lmiui/reflect/Method;
++    .locals 4
++    .annotation system Ldalvik/annotation/Signature;
++        value = {
++            "(",
++            "Ljava/lang/Class<",
++            "*>;",
++            "Ljava/lang/String;",
++            "Ljava/lang/String;",
++            ")",
++            "Lmiui/reflect/Method;"
++        }
++    .end annotation
++
++    .line 20
++    invoke-static {p2}, Lmiui/reflect/ReflectUtils;->parameterTypesOf(Ljava/lang/String;)[Ljava/lang/Class;
++
++    move-result-object v0
++
++    .line 22
++    :try_start_0
++    new-instance v1, Lmiui/reflect/Method;
++
++    invoke-virtual {p0, p1, v0}, Ljava/lang/Class;->getDeclaredMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
++
++    move-result-object v0
++
++    invoke-direct {v1, v0}, Lmiui/reflect/Method;-><init>(Ljava/lang/reflect/Method;)V
++    :try_end_0
++    .catch Ljava/lang/NoSuchMethodException; {:try_start_0 .. :try_end_0} :catch_0
++
++    return-object v1
++
++    :catch_0
++    move-exception v0
++
++    .line 24
++    new-instance v1, Lmiui/reflect/NoSuchMethodException;
++
++    new-instance v2, Ljava/lang/StringBuilder;
++
++    const-string v3, "Method "
++
++    invoke-direct {v2, v3}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
++
++    invoke-virtual {v2, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v2, p2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    const-string p1, " not found in "
++
++    invoke-virtual {v2, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    .line 25
++    invoke-virtual {p0}, Ljava/lang/Class;->getName()Ljava/lang/String;
++
++    move-result-object p0
++
++    invoke-virtual {v2, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v2}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object p0
++
++    invoke-direct {v1, p0, v0}, Lmiui/reflect/NoSuchMethodException;-><init>(Ljava/lang/String;Ljava/lang/Throwable;)V
++
++    throw v1
++.end method
++
++
++# virtual methods
++.method public varargs invoke(Ljava/lang/Class;Ljava/lang/Object;[Ljava/lang/Object;)V
++    .locals 0
++    .annotation system Ldalvik/annotation/Signature;
++        value = {
++            "(",
++            "Ljava/lang/Class<",
++            "*>;",
++            "Ljava/lang/Object;",
++            "[",
++            "Ljava/lang/Object;",
++            ")V"
++        }
++    .end annotation
++
++    .line 30
++    invoke-direct {p0, p2, p3}, Lmiui/reflect/Method;->call(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
++
++    return-void
++.end method
++
++.method public varargs invokeBoolean(Ljava/lang/Class;Ljava/lang/Object;[Ljava/lang/Object;)Z
++    .locals 0
++    .annotation system Ldalvik/annotation/Signature;
++        value = {
++            "(",
++            "Ljava/lang/Class<",
++            "*>;",
++            "Ljava/lang/Object;",
++            "[",
++            "Ljava/lang/Object;",
++            ")Z"
++        }
++    .end annotation
++
++    .line 34
++    invoke-direct {p0, p2, p3}, Lmiui/reflect/Method;->call(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
++
++    move-result-object p0
++
++    check-cast p0, Ljava/lang/Boolean;
++
++    invoke-virtual {p0}, Ljava/lang/Boolean;->booleanValue()Z
++
++    move-result p0
++
++    return p0
++.end method
+diff --git a/smali_classes4/miui/reflect/NoSuchClassException.smali b/smali_classes4/miui/reflect/NoSuchClassException.smali
+new file mode 100644
+index 00000000..05fca7c6
+--- /dev/null
++++ b/smali_classes4/miui/reflect/NoSuchClassException.smali
+@@ -0,0 +1,32 @@
++.class public Lmiui/reflect/NoSuchClassException;
++.super Lmiui/reflect/ReflectionException;
++.source "NoSuchClassException.java"
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 9
++    invoke-direct {p0}, Lmiui/reflect/ReflectionException;-><init>()V
++
++    return-void
++.end method
++
++.method public constructor <init>(Ljava/lang/String;)V
++    .locals 0
++
++    .line 12
++    invoke-direct {p0, p1}, Lmiui/reflect/ReflectionException;-><init>(Ljava/lang/String;)V
++
++    return-void
++.end method
++
++.method public constructor <init>(Ljava/lang/String;Ljava/lang/Throwable;)V
++    .locals 0
++
++    .line 16
++    invoke-direct {p0, p1, p2}, Lmiui/reflect/ReflectionException;-><init>(Ljava/lang/String;Ljava/lang/Throwable;)V
++
++    return-void
++.end method
+diff --git a/smali_classes4/miui/reflect/NoSuchFieldException.smali b/smali_classes4/miui/reflect/NoSuchFieldException.smali
+new file mode 100644
+index 00000000..84bcdde3
+--- /dev/null
++++ b/smali_classes4/miui/reflect/NoSuchFieldException.smali
+@@ -0,0 +1,32 @@
++.class public Lmiui/reflect/NoSuchFieldException;
++.super Lmiui/reflect/ReflectionException;
++.source "NoSuchFieldException.java"
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 9
++    invoke-direct {p0}, Lmiui/reflect/ReflectionException;-><init>()V
++
++    return-void
++.end method
++
++.method public constructor <init>(Ljava/lang/String;)V
++    .locals 0
++
++    .line 12
++    invoke-direct {p0, p1}, Lmiui/reflect/ReflectionException;-><init>(Ljava/lang/String;)V
++
++    return-void
++.end method
++
++.method public constructor <init>(Ljava/lang/String;Ljava/lang/Throwable;)V
++    .locals 0
++
++    .line 16
++    invoke-direct {p0, p1, p2}, Lmiui/reflect/ReflectionException;-><init>(Ljava/lang/String;Ljava/lang/Throwable;)V
++
++    return-void
++.end method
+diff --git a/smali_classes4/miui/reflect/NoSuchMethodException.smali b/smali_classes4/miui/reflect/NoSuchMethodException.smali
+new file mode 100644
+index 00000000..2a1628d4
+--- /dev/null
++++ b/smali_classes4/miui/reflect/NoSuchMethodException.smali
+@@ -0,0 +1,32 @@
++.class public Lmiui/reflect/NoSuchMethodException;
++.super Lmiui/reflect/ReflectionException;
++.source "NoSuchMethodException.java"
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 9
++    invoke-direct {p0}, Lmiui/reflect/ReflectionException;-><init>()V
++
++    return-void
++.end method
++
++.method public constructor <init>(Ljava/lang/String;)V
++    .locals 0
++
++    .line 12
++    invoke-direct {p0, p1}, Lmiui/reflect/ReflectionException;-><init>(Ljava/lang/String;)V
++
++    return-void
++.end method
++
++.method public constructor <init>(Ljava/lang/String;Ljava/lang/Throwable;)V
++    .locals 0
++
++    .line 16
++    invoke-direct {p0, p1, p2}, Lmiui/reflect/ReflectionException;-><init>(Ljava/lang/String;Ljava/lang/Throwable;)V
++
++    return-void
++.end method
+diff --git a/smali_classes4/miui/reflect/ReflectUtils.smali b/smali_classes4/miui/reflect/ReflectUtils.smali
+new file mode 100644
+index 00000000..b12f5c64
+--- /dev/null
++++ b/smali_classes4/miui/reflect/ReflectUtils.smali
+@@ -0,0 +1,342 @@
++.class final Lmiui/reflect/ReflectUtils;
++.super Ljava/lang/Object;
++.source "ReflectUtils.java"
++
++
++# direct methods
++.method constructor <init>()V
++    .locals 0
++
++    .line 12
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++.method static loadClass(Ljava/lang/String;)Ljava/lang/Class;
++    .locals 2
++    .annotation system Ldalvik/annotation/Signature;
++        value = {
++            "(",
++            "Ljava/lang/String;",
++            ")",
++            "Ljava/lang/Class<",
++            "*>;"
++        }
++    .end annotation
++
++    .line 15
++    :try_start_0
++    invoke-static {p0}, Ljava/lang/Class;->forName(Ljava/lang/String;)Ljava/lang/Class;
++
++    move-result-object p0
++    :try_end_0
++    .catch Ljava/lang/ClassNotFoundException; {:try_start_0 .. :try_end_0} :catch_0
++
++    return-object p0
++
++    :catch_0
++    move-exception v0
++
++    .line 17
++    new-instance v1, Lmiui/reflect/NoSuchClassException;
++
++    invoke-direct {v1, p0, v0}, Lmiui/reflect/NoSuchClassException;-><init>(Ljava/lang/String;Ljava/lang/Throwable;)V
++
++    throw v1
++.end method
++
++.method static parameterTypesOf(Ljava/lang/String;)[Ljava/lang/Class;
++    .locals 5
++    .annotation system Ldalvik/annotation/Signature;
++        value = {
++            "(",
++            "Ljava/lang/String;",
++            ")[",
++            "Ljava/lang/Class<",
++            "*>;"
++        }
++    .end annotation
++
++    .line 26
++    new-instance v0, Ljava/util/ArrayList;
++
++    invoke-direct {v0}, Ljava/util/ArrayList;-><init>()V
++
++    const/16 v1, 0x28
++
++    .line 27
++    invoke-virtual {p0, v1}, Ljava/lang/String;->indexOf(I)I
++
++    move-result v1
++
++    add-int/lit8 v1, v1, 0x1
++
++    filled-new-array {v1}, [I
++
++    move-result-object v1
++
++    :goto_0
++    const/4 v2, 0x0
++
++    .line 28
++    aget v3, v1, v2
++
++    invoke-virtual {p0, v3}, Ljava/lang/String;->charAt(I)C
++
++    move-result v3
++
++    const/16 v4, 0x29
++
++    if-eq v3, v4, :cond_0
++
++    .line 29
++    invoke-static {p0, v1}, Lmiui/reflect/ReflectUtils;->parse(Ljava/lang/String;[I)Ljava/lang/Class;
++
++    move-result-object v2
++
++    invoke-interface {v0, v2}, Ljava/util/List;->add(Ljava/lang/Object;)Z
++
++    goto :goto_0
++
++    .line 31
++    :cond_0
++    new-array p0, v2, [Ljava/lang/Class;
++
++    invoke-interface {v0, p0}, Ljava/util/List;->toArray([Ljava/lang/Object;)[Ljava/lang/Object;
++
++    move-result-object p0
++
++    check-cast p0, [Ljava/lang/Class;
++
++    return-object p0
++.end method
++
++.method private static parse(Ljava/lang/String;[I)Ljava/lang/Class;
++    .locals 5
++    .annotation system Ldalvik/annotation/Signature;
++        value = {
++            "(",
++            "Ljava/lang/String;",
++            "[I)",
++            "Ljava/lang/Class<",
++            "*>;"
++        }
++    .end annotation
++
++    const/4 v0, 0x0
++
++    .line 35
++    aget v1, p1, v0
++
++    add-int/lit8 v2, v1, 0x1
++
++    aput v2, p1, v0
++
++    invoke-virtual {p0, v1}, Ljava/lang/String;->charAt(I)C
++
++    move-result v1
++
++    const/16 v2, 0x46
++
++    if-eq v1, v2, :cond_7
++
++    const/16 v2, 0x4c
++
++    const/16 v3, 0x2e
++
++    const/16 v4, 0x2f
++
++    if-eq v1, v2, :cond_6
++
++    const/16 v2, 0x53
++
++    if-eq v1, v2, :cond_5
++
++    const/16 v2, 0x56
++
++    if-eq v1, v2, :cond_4
++
++    const/16 v2, 0x49
++
++    if-eq v1, v2, :cond_3
++
++    const/16 v2, 0x4a
++
++    if-eq v1, v2, :cond_2
++
++    const/16 v2, 0x5a
++
++    if-eq v1, v2, :cond_1
++
++    const/16 v2, 0x5b
++
++    if-eq v1, v2, :cond_0
++
++    packed-switch v1, :pswitch_data_0
++
++    .line 58
++    new-instance p1, Ljava/lang/IllegalArgumentException;
++
++    new-instance v0, Ljava/lang/StringBuilder;
++
++    const-string v1, "Bad signature "
++
++    invoke-direct {v0, v1}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
++
++    invoke-virtual {v0, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object p0
++
++    invoke-direct {p1, p0}, Ljava/lang/IllegalArgumentException;-><init>(Ljava/lang/String;)V
++
++    throw p1
++
++    .line 44
++    :pswitch_0
++    sget-object p0, Ljava/lang/Double;->TYPE:Ljava/lang/Class;
++
++    return-object p0
++
++    .line 39
++    :pswitch_1
++    sget-object p0, Ljava/lang/Character;->TYPE:Ljava/lang/Class;
++
++    return-object p0
++
++    .line 38
++    :pswitch_2
++    sget-object p0, Ljava/lang/Byte;->TYPE:Ljava/lang/Class;
++
++    return-object p0
++
++    .line 53
++    :cond_0
++    aget v1, p1, v0
++
++    add-int/lit8 v1, v1, -0x1
++
++    .line 54
++    invoke-static {p0, p1}, Lmiui/reflect/ReflectUtils;->parse(Ljava/lang/String;[I)Ljava/lang/Class;
++
++    .line 55
++    aget p1, p1, v0
++
++    invoke-virtual {p0, v1, p1}, Ljava/lang/String;->substring(II)Ljava/lang/String;
++
++    move-result-object p0
++
++    invoke-virtual {p0, v4, v3}, Ljava/lang/String;->replace(CC)Ljava/lang/String;
++
++    move-result-object p0
++
++    invoke-static {p0}, Lmiui/reflect/ReflectUtils;->loadClass(Ljava/lang/String;)Ljava/lang/Class;
++
++    move-result-object p0
++
++    return-object p0
++
++    .line 37
++    :cond_1
++    sget-object p0, Ljava/lang/Boolean;->TYPE:Ljava/lang/Class;
++
++    return-object p0
++
++    .line 42
++    :cond_2
++    sget-object p0, Ljava/lang/Long;->TYPE:Ljava/lang/Class;
++
++    return-object p0
++
++    .line 41
++    :cond_3
++    sget-object p0, Ljava/lang/Integer;->TYPE:Ljava/lang/Class;
++
++    return-object p0
++
++    .line 45
++    :cond_4
++    sget-object p0, Ljava/lang/Void;->TYPE:Ljava/lang/Class;
++
++    return-object p0
++
++    .line 40
++    :cond_5
++    sget-object p0, Ljava/lang/Short;->TYPE:Ljava/lang/Class;
++
++    return-object p0
++
++    :cond_6
++    const/16 v1, 0x3b
++
++    .line 47
++    aget v2, p1, v0
++
++    invoke-virtual {p0, v1, v2}, Ljava/lang/String;->indexOf(II)I
++
++    move-result v1
++
++    .line 48
++    aget v2, p1, v0
++
++    invoke-virtual {p0, v2, v1}, Ljava/lang/String;->substring(II)Ljava/lang/String;
++
++    move-result-object p0
++
++    invoke-virtual {p0, v4, v3}, Ljava/lang/String;->replace(CC)Ljava/lang/String;
++
++    move-result-object p0
++
++    add-int/lit8 v1, v1, 0x1
++
++    .line 49
++    aput v1, p1, v0
++
++    .line 50
++    invoke-static {p0}, Lmiui/reflect/ReflectUtils;->loadClass(Ljava/lang/String;)Ljava/lang/Class;
++
++    move-result-object p0
++
++    return-object p0
++
++    .line 43
++    :cond_7
++    sget-object p0, Ljava/lang/Float;->TYPE:Ljava/lang/Class;
++
++    return-object p0
++
++    :pswitch_data_0
++    .packed-switch 0x42
++        :pswitch_2
++        :pswitch_1
++        :pswitch_0
++    .end packed-switch
++.end method
++
++.method static typeOf(Ljava/lang/String;)Ljava/lang/Class;
++    .locals 1
++    .annotation system Ldalvik/annotation/Signature;
++        value = {
++            "(",
++            "Ljava/lang/String;",
++            ")",
++            "Ljava/lang/Class<",
++            "*>;"
++        }
++    .end annotation
++
++    const/4 v0, 0x0
++
++    .line 22
++    filled-new-array {v0}, [I
++
++    move-result-object v0
++
++    invoke-static {p0, v0}, Lmiui/reflect/ReflectUtils;->parse(Ljava/lang/String;[I)Ljava/lang/Class;
++
++    move-result-object p0
++
++    return-object p0
++.end method
+diff --git a/smali_classes4/miui/reflect/ReflectionException.smali b/smali_classes4/miui/reflect/ReflectionException.smali
+new file mode 100644
+index 00000000..34cb58c6
+--- /dev/null
++++ b/smali_classes4/miui/reflect/ReflectionException.smali
+@@ -0,0 +1,32 @@
++.class public Lmiui/reflect/ReflectionException;
++.super Ljava/lang/RuntimeException;
++.source "ReflectionException.java"
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 9
++    invoke-direct {p0}, Ljava/lang/RuntimeException;-><init>()V
++
++    return-void
++.end method
++
++.method public constructor <init>(Ljava/lang/String;)V
++    .locals 0
++
++    .line 12
++    invoke-direct {p0, p1}, Ljava/lang/RuntimeException;-><init>(Ljava/lang/String;)V
++
++    return-void
++.end method
++
++.method public constructor <init>(Ljava/lang/String;Ljava/lang/Throwable;)V
++    .locals 0
++
++    .line 16
++    invoke-direct {p0, p1, p2}, Ljava/lang/RuntimeException;-><init>(Ljava/lang/String;Ljava/lang/Throwable;)V
++
++    return-void
++.end method
+diff --git a/smali_classes4/miui/security/SecurityManager.smali b/smali_classes4/miui/security/SecurityManager.smali
+new file mode 100644
+index 00000000..7255cdc0
+--- /dev/null
++++ b/smali_classes4/miui/security/SecurityManager.smali
+@@ -0,0 +1,32 @@
++.class public Lmiui/security/SecurityManager;
++.super Ljava/lang/Object;
++.source "SecurityManager.java"
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 9
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public checkAccessControlPass(Ljava/lang/String;)Z
++    .locals 0
++
++    const/4 p0, 0x1
++
++    return p0
++.end method
++
++.method public getApplicationAccessControlEnabled(Ljava/lang/String;)Z
++    .locals 0
++
++    const/4 p0, 0x0
++
++    return p0
++.end method
+diff --git a/smali_classes4/miui/util/AttributeResolver.smali b/smali_classes4/miui/util/AttributeResolver.smali
+new file mode 100644
+index 00000000..830c909a
+--- /dev/null
++++ b/smali_classes4/miui/util/AttributeResolver.smali
+@@ -0,0 +1,74 @@
++.class public Lmiui/util/AttributeResolver;
++.super Ljava/lang/Object;
++.source "AttributeResolver.java"
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 11
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++.method public static resolveColor(Landroid/content/Context;I)I
++    .locals 3
++
++    .line 13
++    new-instance v0, Landroid/util/TypedValue;
++
++    invoke-direct {v0}, Landroid/util/TypedValue;-><init>()V
++
++    .line 14
++    invoke-virtual {p0}, Landroid/content/Context;->getTheme()Landroid/content/res/Resources$Theme;
++
++    move-result-object v1
++
++    const/4 v2, 0x1
++
++    invoke-virtual {v1, p1, v0, v2}, Landroid/content/res/Resources$Theme;->resolveAttribute(ILandroid/util/TypedValue;Z)Z
++
++    move-result p1
++
++    if-eqz p1, :cond_1
++
++    .line 15
++    iget p1, v0, Landroid/util/TypedValue;->resourceId:I
++
++    if-lez p1, :cond_0
++
++    .line 16
++    iget p1, v0, Landroid/util/TypedValue;->resourceId:I
++
++    invoke-virtual {p0, p1}, Landroid/content/Context;->getColor(I)I
++
++    move-result p0
++
++    return p0
++
++    .line 18
++    :cond_0
++    iget p0, v0, Landroid/util/TypedValue;->type:I
++
++    const/16 p1, 0x1c
++
++    if-lt p0, p1, :cond_1
++
++    iget p0, v0, Landroid/util/TypedValue;->type:I
++
++    const/16 p1, 0x1f
++
++    if-gt p0, p1, :cond_1
++
++    .line 20
++    iget p0, v0, Landroid/util/TypedValue;->data:I
++
++    return p0
++
++    :cond_1
++    const/4 p0, 0x0
++
++    return p0
++.end method
+diff --git a/smali_classes4/miui/util/HapticFeedbackUtil.smali b/smali_classes4/miui/util/HapticFeedbackUtil.smali
+new file mode 100644
+index 00000000..25c2b9c8
+--- /dev/null
++++ b/smali_classes4/miui/util/HapticFeedbackUtil.smali
+@@ -0,0 +1,218 @@
++.class public Lmiui/util/HapticFeedbackUtil;
++.super Ljava/lang/Object;
++.source "HapticFeedbackUtil.java"
++
++
++# instance fields
++.field private final mContext:Landroid/content/Context;
++
++.field private final mVibrator:Landroid/os/Vibrator;
++
++
++# direct methods
++.method public constructor <init>(Landroid/content/Context;Z)V
++    .locals 0
++
++    .line 20
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    .line 21
++    iput-object p1, p0, Lmiui/util/HapticFeedbackUtil;->mContext:Landroid/content/Context;
++
++    .line 22
++    const-class p2, Landroid/os/Vibrator;
++
++    invoke-virtual {p1, p2}, Landroid/content/Context;->getSystemService(Ljava/lang/Class;)Ljava/lang/Object;
++
++    move-result-object p1
++
++    check-cast p1, Landroid/os/Vibrator;
++
++    iput-object p1, p0, Lmiui/util/HapticFeedbackUtil;->mVibrator:Landroid/os/Vibrator;
++
++    return-void
++.end method
++
++.method public static isSupportLinearMotorVibrate()Z
++    .locals 2
++
++    .line 26
++    const-string v0, "sys.haptic.motor"
++
++    invoke-static {v0}, Landroid/os/SystemProperties;->get(Ljava/lang/String;)Ljava/lang/String;
++
++    move-result-object v0
++
++    const-string v1, "linear"
++
++    invoke-virtual {v1, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
++
++    move-result v0
++
++    return v0
++.end method
++
++.method public static isSupportLinearMotorVibrate(I)Z
++    .locals 0
++
++    const/4 p0, 0x0
++
++    return p0
++.end method
++
++.method private vibrate(Z)Z
++    .locals 3
++
++    .line 72
++    iget-object v0, p0, Lmiui/util/HapticFeedbackUtil;->mVibrator:Landroid/os/Vibrator;
++
++    const/4 v1, 0x0
++
++    if-eqz v0, :cond_2
++
++    invoke-virtual {v0}, Landroid/os/Vibrator;->hasVibrator()Z
++
++    move-result v0
++
++    if-nez v0, :cond_0
++
++    goto :goto_0
++
++    :cond_0
++    const/4 v0, 0x1
++
++    if-nez p1, :cond_1
++
++    .line 75
++    iget-object p1, p0, Lmiui/util/HapticFeedbackUtil;->mContext:Landroid/content/Context;
++
++    invoke-virtual {p1}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
++
++    move-result-object p1
++
++    const-string v2, "haptic_feedback_enabled"
++
++    invoke-static {p1, v2, v0}, Landroid/provider/Settings$System;->getInt(Landroid/content/ContentResolver;Ljava/lang/String;I)I
++
++    move-result p1
++
++    if-nez p1, :cond_1
++
++    return v1
++
++    .line 79
++    :cond_1
++    iget-object p0, p0, Lmiui/util/HapticFeedbackUtil;->mVibrator:Landroid/os/Vibrator;
++
++    const/4 p1, 0x2
++
++    invoke-static {p1}, Landroid/os/VibrationEffect;->createPredefined(I)Landroid/os/VibrationEffect;
++
++    move-result-object p1
++
++    invoke-virtual {p0, p1}, Landroid/os/Vibrator;->vibrate(Landroid/os/VibrationEffect;)V
++
++    return v0
++
++    :cond_2
++    :goto_0
++    return v1
++.end method
++
++
++# virtual methods
++.method public isSupportExtHapticFeedback(I)Z
++    .locals 0
++
++    const/4 p0, 0x0
++
++    return p0
++.end method
++
++.method public performExtHapticFeedback(I)Z
++    .locals 0
++
++    const/4 p0, 0x0
++
++    return p0
++.end method
++
++.method public performExtHapticFeedback(Landroid/net/Uri;)Z
++    .locals 0
++
++    const/4 p0, 0x0
++
++    return p0
++.end method
++
++.method public performHapticFeedback(IDLjava/lang/String;)Z
++    .locals 0
++
++    const/4 p1, 0x0
++
++    .line 54
++    invoke-direct {p0, p1}, Lmiui/util/HapticFeedbackUtil;->vibrate(Z)Z
++
++    move-result p0
++
++    return p0
++.end method
++
++.method public performHapticFeedback(IZ)Z
++    .locals 0
++
++    .line 46
++    invoke-direct {p0, p2}, Lmiui/util/HapticFeedbackUtil;->vibrate(Z)Z
++
++    move-result p0
++
++    return p0
++.end method
++
++.method public performHapticFeedback(IZI)Z
++    .locals 0
++
++    .line 50
++    invoke-direct {p0, p2}, Lmiui/util/HapticFeedbackUtil;->vibrate(Z)Z
++
++    move-result p0
++
++    return p0
++.end method
++
++.method public performHapticFeedback(Ljava/lang/String;Z)Z
++    .locals 0
++
++    .line 58
++    invoke-direct {p0, p2}, Lmiui/util/HapticFeedbackUtil;->vibrate(Z)Z
++
++    move-result p0
++
++    return p0
++.end method
++
++.method public performHapticFeedback(Ljava/lang/String;ZI)Z
++    .locals 0
++
++    .line 62
++    invoke-direct {p0, p2}, Lmiui/util/HapticFeedbackUtil;->vibrate(Z)Z
++
++    move-result p0
++
++    return p0
++.end method
++
++.method public release()V
++    .locals 0
++
++    .line 66
++    iget-object p0, p0, Lmiui/util/HapticFeedbackUtil;->mVibrator:Landroid/os/Vibrator;
++
++    if-eqz p0, :cond_0
++
++    .line 67
++    invoke-virtual {p0}, Landroid/os/Vibrator;->cancel()V
++
++    :cond_0
++    return-void
++.end method
+diff --git a/smali_classes4/miui/util/IOUtils.smali b/smali_classes4/miui/util/IOUtils.smali
+new file mode 100644
+index 00000000..152de86a
+--- /dev/null
++++ b/smali_classes4/miui/util/IOUtils.smali
+@@ -0,0 +1,80 @@
++.class public Lmiui/util/IOUtils;
++.super Ljava/lang/Object;
++.source "IOUtils.java"
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 13
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++.method public static toByteArray(Ljava/io/InputStream;)[B
++    .locals 4
++    .annotation system Ldalvik/annotation/Throws;
++        value = {
++            Ljava/io/IOException;
++        }
++    .end annotation
++
++    .line 15
++    new-instance v0, Ljava/io/ByteArrayOutputStream;
++
++    invoke-direct {v0}, Ljava/io/ByteArrayOutputStream;-><init>()V
++
++    const/16 v1, 0x2000
++
++    .line 16
++    new-array v1, v1, [B
++
++    .line 18
++    :goto_0
++    invoke-virtual {p0, v1}, Ljava/io/InputStream;->read([B)I
++
++    move-result v2
++
++    const/4 v3, -0x1
++
++    if-eq v2, v3, :cond_0
++
++    const/4 v3, 0x0
++
++    .line 19
++    invoke-virtual {v0, v1, v3, v2}, Ljava/io/ByteArrayOutputStream;->write([BII)V
++
++    goto :goto_0
++
++    .line 21
++    :cond_0
++    invoke-virtual {v0}, Ljava/io/ByteArrayOutputStream;->toByteArray()[B
++
++    move-result-object p0
++
++    return-object p0
++.end method
++
++.method public static toString(Ljava/io/InputStream;)Ljava/lang/String;
++    .locals 2
++    .annotation system Ldalvik/annotation/Throws;
++        value = {
++            Ljava/io/IOException;
++        }
++    .end annotation
++
++    .line 25
++    new-instance v0, Ljava/lang/String;
++
++    invoke-static {p0}, Lmiui/util/IOUtils;->toByteArray(Ljava/io/InputStream;)[B
++
++    move-result-object p0
++
++    sget-object v1, Ljava/nio/charset/StandardCharsets;->UTF_8:Ljava/nio/charset/Charset;
++
++    invoke-direct {v0, p0, v1}, Ljava/lang/String;-><init>([BLjava/nio/charset/Charset;)V
++
++    return-object v0
++.end method
+diff --git a/smali_classes4/miui/view/animation/CubicEaseInInterpolator.smali b/smali_classes4/miui/view/animation/CubicEaseInInterpolator.smali
+new file mode 100644
+index 00000000..3f25a049
+--- /dev/null
++++ b/smali_classes4/miui/view/animation/CubicEaseInInterpolator.smali
+@@ -0,0 +1,29 @@
++.class public Lmiui/view/animation/CubicEaseInInterpolator;
++.super Ljava/lang/Object;
++.source "CubicEaseInInterpolator.java"
++
++# interfaces
++.implements Landroid/view/animation/Interpolator;
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public getInterpolation(F)F
++    .locals 0
++
++    mul-float p0, p1, p1
++
++    mul-float/2addr p0, p1
++
++    return p0
++.end method
+diff --git a/smali_classes4/miui/view/animation/CubicEaseInOutInterpolator.smali b/smali_classes4/miui/view/animation/CubicEaseInOutInterpolator.smali
+new file mode 100644
+index 00000000..90463130
+--- /dev/null
++++ b/smali_classes4/miui/view/animation/CubicEaseInOutInterpolator.smali
+@@ -0,0 +1,56 @@
++.class public Lmiui/view/animation/CubicEaseInOutInterpolator;
++.super Ljava/lang/Object;
++.source "CubicEaseInOutInterpolator.java"
++
++# interfaces
++.implements Landroid/view/animation/Interpolator;
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public getInterpolation(F)F
++    .locals 2
++
++    const/high16 p0, 0x40000000    # 2.0f
++
++    mul-float/2addr p1, p0
++
++    const/high16 v0, 0x3f800000    # 1.0f
++
++    cmpg-float v0, p1, v0
++
++    const/high16 v1, 0x3f000000    # 0.5f
++
++    if-gez v0, :cond_0
++
++    mul-float/2addr v1, p1
++
++    mul-float/2addr v1, p1
++
++    mul-float/2addr v1, p1
++
++    return v1
++
++    :cond_0
++    sub-float/2addr p1, p0
++
++    mul-float v0, p1, p1
++
++    mul-float/2addr v0, p1
++
++    add-float/2addr v0, p0
++
++    mul-float/2addr v0, v1
++
++    return v0
++.end method
+diff --git a/smali_classes4/miui/view/animation/CubicEaseOutInterpolator.smali b/smali_classes4/miui/view/animation/CubicEaseOutInterpolator.smali
+new file mode 100644
+index 00000000..40207d4d
+--- /dev/null
++++ b/smali_classes4/miui/view/animation/CubicEaseOutInterpolator.smali
+@@ -0,0 +1,35 @@
++.class public Lmiui/view/animation/CubicEaseOutInterpolator;
++.super Ljava/lang/Object;
++.source "CubicEaseOutInterpolator.java"
++
++# interfaces
++.implements Landroid/view/animation/Interpolator;
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public getInterpolation(F)F
++    .locals 1
++
++    const/high16 p0, 0x3f800000    # 1.0f
++
++    sub-float/2addr p1, p0
++
++    mul-float v0, p1, p1
++
++    mul-float/2addr v0, p1
++
++    add-float/2addr v0, p0
++
++    return v0
++.end method
+diff --git a/smali_classes4/miui/view/animation/QuadraticEaseInOutInterpolator.smali b/smali_classes4/miui/view/animation/QuadraticEaseInOutInterpolator.smali
+new file mode 100644
+index 00000000..9b2ea539
+--- /dev/null
++++ b/smali_classes4/miui/view/animation/QuadraticEaseInOutInterpolator.smali
+@@ -0,0 +1,56 @@
++.class public Lmiui/view/animation/QuadraticEaseInOutInterpolator;
++.super Ljava/lang/Object;
++.source "QuadraticEaseInOutInterpolator.java"
++
++# interfaces
++.implements Landroid/view/animation/Interpolator;
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public getInterpolation(F)F
++    .locals 2
++
++    const/high16 p0, 0x40000000    # 2.0f
++
++    mul-float/2addr p1, p0
++
++    const/high16 v0, 0x3f800000    # 1.0f
++
++    cmpg-float v1, p1, v0
++
++    if-gez v1, :cond_0
++
++    const/high16 p0, 0x3f000000    # 0.5f
++
++    mul-float/2addr p0, p1
++
++    mul-float/2addr p0, p1
++
++    return p0
++
++    :cond_0
++    sub-float/2addr p1, v0
++
++    sub-float p0, p1, p0
++
++    mul-float/2addr p1, p0
++
++    sub-float/2addr p1, v0
++
++    const/high16 p0, -0x41000000    # -0.5f
++
++    mul-float/2addr p1, p0
++
++    return p1
++.end method
+diff --git a/smali_classes4/miui/view/animation/QuadraticEaseOutInterpolator.smali b/smali_classes4/miui/view/animation/QuadraticEaseOutInterpolator.smali
+new file mode 100644
+index 00000000..7a98cf71
+--- /dev/null
++++ b/smali_classes4/miui/view/animation/QuadraticEaseOutInterpolator.smali
+@@ -0,0 +1,33 @@
++.class public Lmiui/view/animation/QuadraticEaseOutInterpolator;
++.super Ljava/lang/Object;
++.source "QuadraticEaseOutInterpolator.java"
++
++# interfaces
++.implements Landroid/view/animation/Interpolator;
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public getInterpolation(F)F
++    .locals 1
++
++    neg-float p0, p1
++
++    const/high16 v0, 0x40000000    # 2.0f
++
++    sub-float/2addr p1, v0
++
++    mul-float/2addr p0, p1
++
++    return p0
++.end method
+diff --git a/smali_classes4/miui/view/animation/QuarticEaseInInterpolator.smali b/smali_classes4/miui/view/animation/QuarticEaseInInterpolator.smali
+new file mode 100644
+index 00000000..36c69494
+--- /dev/null
++++ b/smali_classes4/miui/view/animation/QuarticEaseInInterpolator.smali
+@@ -0,0 +1,31 @@
++.class public Lmiui/view/animation/QuarticEaseInInterpolator;
++.super Ljava/lang/Object;
++.source "QuarticEaseInInterpolator.java"
++
++# interfaces
++.implements Landroid/view/animation/Interpolator;
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public getInterpolation(F)F
++    .locals 0
++
++    mul-float p0, p1, p1
++
++    mul-float/2addr p0, p1
++
++    mul-float/2addr p0, p1
++
++    return p0
++.end method
+diff --git a/smali_classes4/miui/view/animation/QuarticEaseInOutInterpolator.smali b/smali_classes4/miui/view/animation/QuarticEaseInOutInterpolator.smali
+new file mode 100644
+index 00000000..8ef46e08
+--- /dev/null
++++ b/smali_classes4/miui/view/animation/QuarticEaseInOutInterpolator.smali
+@@ -0,0 +1,62 @@
++.class public Lmiui/view/animation/QuarticEaseInOutInterpolator;
++.super Ljava/lang/Object;
++.source "QuarticEaseInOutInterpolator.java"
++
++# interfaces
++.implements Landroid/view/animation/Interpolator;
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public getInterpolation(F)F
++    .locals 1
++
++    const/high16 p0, 0x40000000    # 2.0f
++
++    mul-float/2addr p1, p0
++
++    const/high16 v0, 0x3f800000    # 1.0f
++
++    cmpg-float v0, p1, v0
++
++    if-gez v0, :cond_0
++
++    const/high16 p0, 0x3f000000    # 0.5f
++
++    mul-float/2addr p0, p1
++
++    mul-float/2addr p0, p1
++
++    mul-float/2addr p0, p1
++
++    mul-float/2addr p0, p1
++
++    return p0
++
++    :cond_0
++    sub-float/2addr p1, p0
++
++    mul-float v0, p1, p1
++
++    mul-float/2addr v0, p1
++
++    mul-float/2addr v0, p1
++
++    sub-float/2addr v0, p0
++
++    const/high16 p0, -0x41000000    # -0.5f
++
++    mul-float/2addr v0, p0
++
++    return v0
++.end method
+diff --git a/smali_classes4/miui/view/animation/QuarticEaseOutInterpolator.smali b/smali_classes4/miui/view/animation/QuarticEaseOutInterpolator.smali
+new file mode 100644
+index 00000000..0e48ef72
+--- /dev/null
++++ b/smali_classes4/miui/view/animation/QuarticEaseOutInterpolator.smali
+@@ -0,0 +1,39 @@
++.class public Lmiui/view/animation/QuarticEaseOutInterpolator;
++.super Ljava/lang/Object;
++.source "QuarticEaseOutInterpolator.java"
++
++# interfaces
++.implements Landroid/view/animation/Interpolator;
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public getInterpolation(F)F
++    .locals 1
++
++    const/high16 p0, 0x3f800000    # 1.0f
++
++    sub-float/2addr p1, p0
++
++    mul-float v0, p1, p1
++
++    mul-float/2addr v0, p1
++
++    mul-float/2addr v0, p1
++
++    sub-float/2addr v0, p0
++
++    neg-float p0, v0
++
++    return p0
++.end method
+diff --git a/smali_classes4/miui/view/animation/QuinticEaseInInterpolator.smali b/smali_classes4/miui/view/animation/QuinticEaseInInterpolator.smali
+new file mode 100644
+index 00000000..4584f4cc
+--- /dev/null
++++ b/smali_classes4/miui/view/animation/QuinticEaseInInterpolator.smali
+@@ -0,0 +1,33 @@
++.class public Lmiui/view/animation/QuinticEaseInInterpolator;
++.super Ljava/lang/Object;
++.source "QuinticEaseInInterpolator.java"
++
++# interfaces
++.implements Landroid/view/animation/Interpolator;
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public getInterpolation(F)F
++    .locals 0
++
++    mul-float p0, p1, p1
++
++    mul-float/2addr p0, p1
++
++    mul-float/2addr p0, p1
++
++    mul-float/2addr p0, p1
++
++    return p0
++.end method
+diff --git a/smali_classes4/miui/view/animation/QuinticEaseOutInterpolator.smali b/smali_classes4/miui/view/animation/QuinticEaseOutInterpolator.smali
+new file mode 100644
+index 00000000..87df34db
+--- /dev/null
++++ b/smali_classes4/miui/view/animation/QuinticEaseOutInterpolator.smali
+@@ -0,0 +1,39 @@
++.class public Lmiui/view/animation/QuinticEaseOutInterpolator;
++.super Ljava/lang/Object;
++.source "QuinticEaseOutInterpolator.java"
++
++# interfaces
++.implements Landroid/view/animation/Interpolator;
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public getInterpolation(F)F
++    .locals 1
++
++    const/high16 p0, 0x3f800000    # 1.0f
++
++    sub-float/2addr p1, p0
++
++    mul-float v0, p1, p1
++
++    mul-float/2addr v0, p1
++
++    mul-float/2addr v0, p1
++
++    mul-float/2addr v0, p1
++
++    add-float/2addr v0, p0
++
++    return v0
++.end method
+diff --git a/smali_classes4/miui/view/animation/SineEaseInOutInterpolator.smali b/smali_classes4/miui/view/animation/SineEaseInOutInterpolator.smali
+new file mode 100644
+index 00000000..c06a8e99
+--- /dev/null
++++ b/smali_classes4/miui/view/animation/SineEaseInOutInterpolator.smali
+@@ -0,0 +1,46 @@
++.class public Lmiui/view/animation/SineEaseInOutInterpolator;
++.super Ljava/lang/Object;
++.source "SineEaseInOutInterpolator.java"
++
++# interfaces
++.implements Landroid/view/animation/Interpolator;
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public getInterpolation(F)F
++    .locals 2
++
++    float-to-double p0, p1
++
++    const-wide v0, 0x400921fb54442d18L    # Math.PI
++
++    mul-double/2addr p0, v0
++
++    .line 13
++    invoke-static {p0, p1}, Ljava/lang/Math;->cos(D)D
++
++    move-result-wide p0
++
++    const-wide/high16 v0, 0x3ff0000000000000L    # 1.0
++
++    sub-double/2addr p0, v0
++
++    double-to-float p0, p0
++
++    const/high16 p1, -0x41000000    # -0.5f
++
++    mul-float/2addr p0, p1
++
++    return p0
++.end method
+diff --git a/smali_classes4/miui/view/animation/SineEaseOutInterpolator.smali b/smali_classes4/miui/view/animation/SineEaseOutInterpolator.smali
+new file mode 100644
+index 00000000..af4dbd2e
+--- /dev/null
++++ b/smali_classes4/miui/view/animation/SineEaseOutInterpolator.smali
+@@ -0,0 +1,38 @@
++.class public Lmiui/view/animation/SineEaseOutInterpolator;
++.super Ljava/lang/Object;
++.source "SineEaseOutInterpolator.java"
++
++# interfaces
++.implements Landroid/view/animation/Interpolator;
++
++
++# direct methods
++.method public constructor <init>()V
++    .locals 0
++
++    .line 10
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public getInterpolation(F)F
++    .locals 2
++
++    float-to-double p0, p1
++
++    const-wide v0, 0x3ff921fb54442d18L    # 1.5707963267948966
++
++    mul-double/2addr p0, v0
++
++    .line 13
++    invoke-static {p0, p1}, Ljava/lang/Math;->sin(D)D
++
++    move-result-wide p0
++
++    double-to-float p0, p0
++
++    return p0
++.end method
+diff --git a/smali_classes4/miui/widget/ImmersionListPopupWindow$1.smali b/smali_classes4/miui/widget/ImmersionListPopupWindow$1.smali
+new file mode 100644
+index 00000000..17a4d30c
+--- /dev/null
++++ b/smali_classes4/miui/widget/ImmersionListPopupWindow$1.smali
+@@ -0,0 +1,86 @@
++.class Lmiui/widget/ImmersionListPopupWindow$1;
++.super Ljava/lang/Object;
++.source "ImmersionListPopupWindow.java"
++
++# interfaces
++.implements Landroid/widget/AdapterView$OnItemClickListener;
++
++
++# annotations
++.annotation system Ldalvik/annotation/EnclosingMethod;
++    value = Lmiui/widget/ImmersionListPopupWindow;-><init>(Landroid/content/Context;)V
++.end annotation
++
++.annotation system Ldalvik/annotation/InnerClass;
++    accessFlags = 0x0
++    name = null
++.end annotation
++
++
++# instance fields
++.field final synthetic this$0:Lmiui/widget/ImmersionListPopupWindow;
++
++
++# direct methods
++.method constructor <init>(Lmiui/widget/ImmersionListPopupWindow;)V
++    .locals 0
++    .annotation system Ldalvik/annotation/MethodParameters;
++        accessFlags = {
++            0x8010
++        }
++        names = {
++            null
++        }
++    .end annotation
++
++    .line 39
++    iput-object p1, p0, Lmiui/widget/ImmersionListPopupWindow$1;->this$0:Lmiui/widget/ImmersionListPopupWindow;
++
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++
++# virtual methods
++.method public onItemClick(Landroid/widget/AdapterView;Landroid/view/View;IJ)V
++    .locals 6
++    .annotation system Ldalvik/annotation/Signature;
++        value = {
++            "(",
++            "Landroid/widget/AdapterView<",
++            "*>;",
++            "Landroid/view/View;",
++            "IJ)V"
++        }
++    .end annotation
++
++    .line 42
++    iget-object v0, p0, Lmiui/widget/ImmersionListPopupWindow$1;->this$0:Lmiui/widget/ImmersionListPopupWindow;
++
++    invoke-static {v0}, Lmiui/widget/ImmersionListPopupWindow;->access$000(Lmiui/widget/ImmersionListPopupWindow;)Landroid/widget/AdapterView$OnItemClickListener;
++
++    move-result-object v0
++
++    if-eqz v0, :cond_0
++
++    .line 43
++    iget-object p0, p0, Lmiui/widget/ImmersionListPopupWindow$1;->this$0:Lmiui/widget/ImmersionListPopupWindow;
++
++    invoke-static {p0}, Lmiui/widget/ImmersionListPopupWindow;->access$000(Lmiui/widget/ImmersionListPopupWindow;)Landroid/widget/AdapterView$OnItemClickListener;
++
++    move-result-object v0
++
++    move-object v1, p1
++
++    move-object v2, p2
++
++    move v3, p3
++
++    move-wide v4, p4
++
++    invoke-interface/range {v0 .. v5}, Landroid/widget/AdapterView$OnItemClickListener;->onItemClick(Landroid/widget/AdapterView;Landroid/view/View;IJ)V
++
++    :cond_0
++    return-void
++.end method
+diff --git a/smali_classes4/miui/widget/ImmersionListPopupWindow.smali b/smali_classes4/miui/widget/ImmersionListPopupWindow.smali
+new file mode 100644
+index 00000000..9e0988f2
+--- /dev/null
++++ b/smali_classes4/miui/widget/ImmersionListPopupWindow.smali
+@@ -0,0 +1,310 @@
++.class public Lmiui/widget/ImmersionListPopupWindow;
++.super Landroid/widget/PopupWindow;
++.source "ImmersionListPopupWindow.java"
++
++
++# instance fields
++.field private mAdapter:Landroid/widget/ListAdapter;
++
++.field private final mContext:Landroid/content/Context;
++
++.field private final mListView:Landroid/widget/ListView;
++
++.field private mOnItemClickListener:Landroid/widget/AdapterView$OnItemClickListener;
++
++
++# direct methods
++.method public constructor <init>(Landroid/content/Context;)V
++    .locals 4
++
++    .line 27
++    invoke-direct {p0, p1}, Landroid/widget/PopupWindow;-><init>(Landroid/content/Context;)V
++
++    .line 28
++    iput-object p1, p0, Lmiui/widget/ImmersionListPopupWindow;->mContext:Landroid/content/Context;
++
++    const/4 v0, 0x1
++
++    .line 29
++    invoke-virtual {p0, v0}, Lmiui/widget/ImmersionListPopupWindow;->setFocusable(Z)V
++
++    .line 30
++    invoke-virtual {p0, v0}, Lmiui/widget/ImmersionListPopupWindow;->setOutsideTouchable(Z)V
++
++    const v0, 0x10104e2
++
++    .line 32
++    filled-new-array {v0}, [I
++
++    move-result-object v0
++
++    invoke-virtual {p1, v0}, Landroid/content/Context;->obtainStyledAttributes([I)Landroid/content/res/TypedArray;
++
++    move-result-object v0
++
++    .line 34
++    new-instance v1, Landroid/graphics/drawable/ColorDrawable;
++
++    const/4 v2, 0x0
++
++    const/4 v3, -0x1
++
++    invoke-virtual {v0, v2, v3}, Landroid/content/res/TypedArray;->getColor(II)I
++
++    move-result v2
++
++    invoke-direct {v1, v2}, Landroid/graphics/drawable/ColorDrawable;-><init>(I)V
++
++    invoke-virtual {p0, v1}, Lmiui/widget/ImmersionListPopupWindow;->setBackgroundDrawable(Landroid/graphics/drawable/Drawable;)V
++
++    .line 35
++    invoke-virtual {v0}, Landroid/content/res/TypedArray;->recycle()V
++
++    .line 36
++    invoke-virtual {p1}, Landroid/content/Context;->getResources()Landroid/content/res/Resources;
++
++    move-result-object v0
++
++    invoke-virtual {v0}, Landroid/content/res/Resources;->getDisplayMetrics()Landroid/util/DisplayMetrics;
++
++    move-result-object v0
++
++    iget v0, v0, Landroid/util/DisplayMetrics;->density:F
++
++    const/high16 v1, 0x41000000    # 8.0f
++
++    mul-float/2addr v0, v1
++
++    invoke-virtual {p0, v0}, Lmiui/widget/ImmersionListPopupWindow;->setElevation(F)V
++
++    .line 38
++    new-instance v0, Landroid/widget/ListView;
++
++    invoke-direct {v0, p1}, Landroid/widget/ListView;-><init>(Landroid/content/Context;)V
++
++    iput-object v0, p0, Lmiui/widget/ImmersionListPopupWindow;->mListView:Landroid/widget/ListView;
++
++    .line 39
++    new-instance p1, Lmiui/widget/ImmersionListPopupWindow$1;
++
++    invoke-direct {p1, p0}, Lmiui/widget/ImmersionListPopupWindow$1;-><init>(Lmiui/widget/ImmersionListPopupWindow;)V
++
++    invoke-virtual {v0, p1}, Landroid/widget/ListView;->setOnItemClickListener(Landroid/widget/AdapterView$OnItemClickListener;)V
++
++    .line 47
++    invoke-virtual {p0, v0}, Lmiui/widget/ImmersionListPopupWindow;->setContentView(Landroid/view/View;)V
++
++    return-void
++.end method
++
++.method static synthetic access$000(Lmiui/widget/ImmersionListPopupWindow;)Landroid/widget/AdapterView$OnItemClickListener;
++    .locals 0
++
++    .line 20
++    iget-object p0, p0, Lmiui/widget/ImmersionListPopupWindow;->mOnItemClickListener:Landroid/widget/AdapterView$OnItemClickListener;
++
++    return-object p0
++.end method
++
++.method private measureContentWidth(Landroid/view/ViewGroup;)I
++    .locals 7
++
++    if-nez p1, :cond_0
++
++    .line 77
++    new-instance p1, Landroid/widget/FrameLayout;
++
++    iget-object v0, p0, Lmiui/widget/ImmersionListPopupWindow;->mContext:Landroid/content/Context;
++
++    invoke-direct {p1, v0}, Landroid/widget/FrameLayout;-><init>(Landroid/content/Context;)V
++
++    :cond_0
++    const/4 v0, 0x0
++
++    .line 79
++    invoke-static {v0, v0}, Landroid/view/View$MeasureSpec;->makeMeasureSpec(II)I
++
++    move-result v1
++
++    const/4 v2, 0x0
++
++    move v3, v0
++
++    move v4, v3
++
++    move-object v5, v2
++
++    .line 83
++    :goto_0
++    iget-object v6, p0, Lmiui/widget/ImmersionListPopupWindow;->mAdapter:Landroid/widget/ListAdapter;
++
++    invoke-interface {v6}, Landroid/widget/ListAdapter;->getCount()I
++
++    move-result v6
++
++    if-ge v0, v6, :cond_2
++
++    .line 84
++    iget-object v6, p0, Lmiui/widget/ImmersionListPopupWindow;->mAdapter:Landroid/widget/ListAdapter;
++
++    invoke-interface {v6, v0}, Landroid/widget/ListAdapter;->getItemViewType(I)I
++
++    move-result v6
++
++    if-eq v6, v4, :cond_1
++
++    move-object v5, v2
++
++    move v4, v6
++
++    .line 89
++    :cond_1
++    iget-object v6, p0, Lmiui/widget/ImmersionListPopupWindow;->mAdapter:Landroid/widget/ListAdapter;
++
++    invoke-interface {v6, v0, v5, p1}, Landroid/widget/ListAdapter;->getView(ILandroid/view/View;Landroid/view/ViewGroup;)Landroid/view/View;
++
++    move-result-object v5
++
++    .line 90
++    invoke-virtual {v5, v1, v1}, Landroid/view/View;->measure(II)V
++
++    .line 91
++    invoke-virtual {v5}, Landroid/view/View;->getMeasuredWidth()I
++
++    move-result v6
++
++    invoke-static {v3, v6}, Ljava/lang/Math;->max(II)I
++
++    move-result v3
++
++    add-int/lit8 v0, v0, 0x1
++
++    goto :goto_0
++
++    .line 93
++    :cond_2
++    iget-object p1, p0, Lmiui/widget/ImmersionListPopupWindow;->mListView:Landroid/widget/ListView;
++
++    invoke-virtual {p1}, Landroid/widget/ListView;->getPaddingLeft()I
++
++    move-result p1
++
++    add-int/2addr v3, p1
++
++    iget-object p0, p0, Lmiui/widget/ImmersionListPopupWindow;->mListView:Landroid/widget/ListView;
++
++    invoke-virtual {p0}, Landroid/widget/ListView;->getPaddingRight()I
++
++    move-result p0
++
++    add-int/2addr v3, p0
++
++    return v3
++.end method
++
++
++# virtual methods
++.method public prepareShow(Landroid/view/View;Landroid/view/ViewGroup;)Z
++    .locals 1
++
++    .line 60
++    iget-object p1, p0, Lmiui/widget/ImmersionListPopupWindow;->mAdapter:Landroid/widget/ListAdapter;
++
++    if-eqz p1, :cond_1
++
++    invoke-interface {p1}, Landroid/widget/ListAdapter;->getCount()I
++
++    move-result p1
++
++    if-nez p1, :cond_0
++
++    goto :goto_0
++
++    .line 63
++    :cond_0
++    iget-object p1, p0, Lmiui/widget/ImmersionListPopupWindow;->mContext:Landroid/content/Context;
++
++    invoke-virtual {p1}, Landroid/content/Context;->getResources()Landroid/content/res/Resources;
++
++    move-result-object p1
++
++    invoke-virtual {p1}, Landroid/content/res/Resources;->getDisplayMetrics()Landroid/util/DisplayMetrics;
++
++    move-result-object p1
++
++    iget p1, p1, Landroid/util/DisplayMetrics;->widthPixels:I
++
++    int-to-float p1, p1
++
++    const v0, 0x3f4ccccd    # 0.8f
++
++    mul-float/2addr p1, v0
++
++    float-to-int p1, p1
++
++    .line 64
++    invoke-direct {p0, p2}, Lmiui/widget/ImmersionListPopupWindow;->measureContentWidth(Landroid/view/ViewGroup;)I
++
++    move-result p2
++
++    invoke-static {p2, p1}, Ljava/lang/Math;->min(II)I
++
++    move-result p1
++
++    invoke-virtual {p0, p1}, Lmiui/widget/ImmersionListPopupWindow;->setWidth(I)V
++
++    const/4 p1, -0x2
++
++    .line 65
++    invoke-virtual {p0, p1}, Lmiui/widget/ImmersionListPopupWindow;->setHeight(I)V
++
++    const/4 p0, 0x1
++
++    return p0
++
++    :cond_1
++    :goto_0
++    const/4 p0, 0x0
++
++    return p0
++.end method
++
++.method public setAdapter(Landroid/widget/ListAdapter;)V
++    .locals 0
++
++    .line 51
++    iput-object p1, p0, Lmiui/widget/ImmersionListPopupWindow;->mAdapter:Landroid/widget/ListAdapter;
++
++    .line 52
++    iget-object p0, p0, Lmiui/widget/ImmersionListPopupWindow;->mListView:Landroid/widget/ListView;
++
++    invoke-virtual {p0, p1}, Landroid/widget/ListView;->setAdapter(Landroid/widget/ListAdapter;)V
++
++    return-void
++.end method
++
++.method public setOnItemClickListener(Landroid/widget/AdapterView$OnItemClickListener;)V
++    .locals 0
++
++    .line 56
++    iput-object p1, p0, Lmiui/widget/ImmersionListPopupWindow;->mOnItemClickListener:Landroid/widget/AdapterView$OnItemClickListener;
++
++    return-void
++.end method
++
++.method public show(Landroid/view/View;Landroid/view/ViewGroup;)V
++    .locals 0
++
++    .line 70
++    invoke-virtual {p0, p1, p2}, Lmiui/widget/ImmersionListPopupWindow;->prepareShow(Landroid/view/View;Landroid/view/ViewGroup;)Z
++
++    move-result p2
++
++    if-eqz p2, :cond_0
++
++    .line 71
++    invoke-virtual {p0, p1}, Lmiui/widget/ImmersionListPopupWindow;->showAsDropDown(Landroid/view/View;)V
++
++    :cond_0
++    return-void
++.end method
+-- 
+2.43.0
+

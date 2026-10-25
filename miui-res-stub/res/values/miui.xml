@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<!-- MIUI SDK (com.miui.core) resources referenced by MiuiCamera, with their stock IDs -->
+<resources>
+    <attr name="checkBoxDrawableTouchAnimEnable" format="boolean" />
+    <attr name="checkWidgetBackgroundNormalAlpha" format="float" />
+    <attr name="checkWidgetDisableDrawableBackgroundColor" format="color" />
+    <attr name="checkWidgetStrokeColor" format="color" />
+    <attr name="checkWidgetStrokeNormalAlpha" format="float" />
+    <attr name="immersionWindowBackground" format="reference|color" />
+    <attr name="radioButtonDrawableTouchAnimEnable" format="boolean" />
+    <attr name="windowActionBar" format="boolean" />
+
+    <drawable name="action_bar_back_dark">#00000000</drawable>
+
+    <style name="TextAppearance" parent="" />
+    <style name="Theme.Dark" parent="" />
+    <style name="Theme.DayNight" parent="" />
+    <style name="Theme.DayNight.Dialog.Alert" parent="" />
+    <style name="Theme.DayNight.NoTitle" parent="" />
+    <style name="Theme.Light" parent="" />
+    <style name="Widget.CompoundButton.RadioButton.Circle" parent="" />
+    <style name="Widget.DropDownItem.Spinner" parent="" />
+    <style name="Widget.DropdownSelector.Spinner" parent="" />
+
+    <public type="attr" name="checkBoxDrawableTouchAnimEnable" id="0x100100ab" />
+    <public type="attr" name="checkWidgetBackgroundNormalAlpha" id="0x100100b0" />
+    <public type="attr" name="checkWidgetDisableDrawableBackgroundColor" id="0x100100a7" />
+    <public type="attr" name="checkWidgetStrokeColor" id="0x100100af" />
+    <public type="attr" name="checkWidgetStrokeNormalAlpha" id="0x100100b2" />
+    <public type="attr" name="immersionWindowBackground" id="0x10010069" />
+    <public type="attr" name="radioButtonDrawableTouchAnimEnable" id="0x100100ae" />
+    <public type="attr" name="windowActionBar" id="0x1001000b" />
+    <public type="drawable" name="action_bar_back_dark" id="0x1002006e" />
+    <public type="style" name="TextAppearance" id="0x100d0000" />
+    <public type="style" name="Theme.Dark" id="0x100d0018" />
+    <public type="style" name="Theme.DayNight" id="0x100d00c5" />
+    <public type="style" name="Theme.DayNight.Dialog.Alert" id="0x100d00c7" />
+    <public type="style" name="Theme.DayNight.NoTitle" id="0x100d00d0" />
+    <public type="style" name="Theme.Light" id="0x100d0017" />
+    <public type="style" name="Widget.CompoundButton.RadioButton.Circle" id="0x100d00c4" />
+    <public type="style" name="Widget.DropDownItem.Spinner" id="0x100d0085" />
+    <public type="style" name="Widget.DropdownSelector.Spinner" id="0x100d008e" />
+</resources>

@@ -1,0 +1,251 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Debayan Kar <kardebayan3@gmail.com>
+Date: Sun, 25 Oct 2026 16:05:18 +0000
+Subject: [PATCH 08/12] Replace MIUI SDK resources and widgets
+
+Themes, styles and layouts reference resources of the MIUI SDK
+package (com.miui.core, package ID 0x10) and inflate its widgets,
+neither exists on AOSP. Without the parent themes the app theme
+fails to resolve.
+
+- Base the themes and widget styles on their DeviceDefault
+  counterparts and set android:windowActionBar instead of the MIUI one
+- Drop the MIUI only check widget attributes
+- Inflate platform Switch, SeekBar and CheckedTextView widgets in
+  place of the MIUI ones in the preference and spinner layouts
+- Use the app's own back icon in the mimoji emoticon page
+- Stop requiring framework package 16 to rebuild the APK
+---
+ apktool.yml                                   |  1 -
+ res/layout/fragment_mimoji_emoticon.xml       |  2 +-
+ ...ix_compat_simple_spinner_dropdown_item.xml |  2 +-
+ ...compat_spinner_dropdown_checkable_item.xml |  2 +-
+ .../miuix_preference_widget_checkbox.xml      |  2 +-
+ .../miuix_preference_widget_seekbar.xml       |  2 +-
+ res/layout/miuix_preference_widget_switch.xml |  2 +-
+ .../miuix_preference_widget_switch_compat.xml |  2 +-
+ res/layout/more_mode_style_settings.xml       |  4 +--
+ res/values/styles.xml                         | 30 ++++++++-----------
+ 10 files changed, 21 insertions(+), 28 deletions(-)
+
+diff --git a/apktool.yml b/apktool.yml
+index 5a9fb784..2705744e 100644
+--- a/apktool.yml
++++ b/apktool.yml
+@@ -3,7 +3,6 @@ apkFileName: MiuiCamera.apk
+ usesFramework:
+   ids:
+   - 1
+-  - 16
+ sdkInfo:
+   minSdkVersion: 28
+   targetSdkVersion: 29
+diff --git a/res/layout/fragment_mimoji_emoticon.xml b/res/layout/fragment_mimoji_emoticon.xml
+index e41565da..ef55195b 100644
+--- a/res/layout/fragment_mimoji_emoticon.xml
++++ b/res/layout/fragment_mimoji_emoticon.xml
+@@ -3,7 +3,7 @@
+   xmlns:android="http://schemas.android.com/apk/res/android">
+     <LinearLayout android:orientation="vertical" android:id="@id/rl_top_bar" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_alignParentTop="true">
+         <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/mimoji_emoticon_margin_top" android:layout_marginStart="@dimen/mimoji_emoticon_margin_left" android:layout_marginEnd="@dimen/mimoji_emoticon_margin_left">
+-            <ImageView android:gravity="center" android:id="@id/btn_back" android:layout_width="@dimen/mimoji_emoticon_size_top" android:layout_height="@dimen/mimoji_emoticon_size_top" android:src="@miui:drawable/action_bar_back_dark" android:contentDescription="@string/mimoji_back" />
++            <ImageView android:gravity="center" android:id="@id/btn_back" android:layout_width="@dimen/mimoji_emoticon_size_top" android:layout_height="@dimen/mimoji_emoticon_size_top" android:src="@drawable/ic_back" android:contentDescription="@string/mimoji_back" />
+             <ImageView android:gravity="center" android:id="@id/btn_select_all" android:layout_width="@dimen/mimoji_emoticon_size_top" android:layout_height="@dimen/mimoji_emoticon_size_top" android:src="@drawable/bg_mimoji_btn_emoticon_all_selected" android:contentDescription="@string/accessibility_deselect_all" android:layout_alignParentEnd="true" />
+         </RelativeLayout>
+         <TextView android:textSize="@dimen/mimoji_emoticon_text_size" android:textColor="@color/white" android:gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="13.799988dp" android:text="@string/emoticon" android:fontFamily="sans-serif-light" android:layout_marginStart="32.0dp" />
+diff --git a/res/layout/miuix_compat_simple_spinner_dropdown_item.xml b/res/layout/miuix_compat_simple_spinner_dropdown_item.xml
+index 705e591a..8d725bc0 100644
+--- a/res/layout/miuix_compat_simple_spinner_dropdown_item.xml
++++ b/res/layout/miuix_compat_simple_spinner_dropdown_item.xml
+@@ -1,3 +1,3 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<miui.widget.CheckedTextView android:ellipsize="marquee" android:id="@android:id/text1" android:layout_width="match_parent" android:layout_height="wrap_content" android:singleLine="true" style="@miui:style/Widget.DropDownItem.Spinner"
++<CheckedTextView android:ellipsize="marquee" android:id="@android:id/text1" android:layout_width="match_parent" android:layout_height="wrap_content" android:singleLine="true" style="@android:style/Widget.DeviceDefault.DropDownItem.Spinner"
+   xmlns:android="http://schemas.android.com/apk/res/android" />
+diff --git a/res/layout/miuix_compat_spinner_dropdown_checkable_item.xml b/res/layout/miuix_compat_spinner_dropdown_checkable_item.xml
+index 27c29933..fd8a1991 100644
+--- a/res/layout/miuix_compat_spinner_dropdown_checkable_item.xml
++++ b/res/layout/miuix_compat_spinner_dropdown_checkable_item.xml
+@@ -1,5 +1,5 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content" style="@miui:style/Widget.DropDownItem.Spinner"
++<LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content" style="@android:style/Widget.DeviceDefault.DropDownItem.Spinner"
+   xmlns:android="http://schemas.android.com/apk/res/android">
+     <FrameLayout android:id="@id/spinner_dropdown_container" android:layout_width="0.0dp" android:layout_height="wrap_content" android:layout_weight="1.0" />
+     <RadioButton android:id="@android:id/checkbox" android:focusable="false" android:clickable="false" android:layout_width="wrap_content" android:layout_height="wrap_content" android:button="?android:listChoiceIndicatorSingle" android:layout_marginStart="@dimen/miuix_compat_spinner_dropdown_item_icon_margin" />
+diff --git a/res/layout/miuix_preference_widget_checkbox.xml b/res/layout/miuix_preference_widget_checkbox.xml
+index 466d783c..f1180759 100644
+--- a/res/layout/miuix_preference_widget_checkbox.xml
++++ b/res/layout/miuix_preference_widget_checkbox.xml
+@@ -1,3 +1,3 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<miui.widget.SlidingButton android:layout_gravity="center" android:id="@android:id/checkbox" android:layout_width="wrap_content" android:layout_height="wrap_content"
++<Switch android:layout_gravity="center" android:id="@android:id/checkbox" android:layout_width="wrap_content" android:layout_height="wrap_content"
+   xmlns:android="http://schemas.android.com/apk/res/android" />
+diff --git a/res/layout/miuix_preference_widget_seekbar.xml b/res/layout/miuix_preference_widget_seekbar.xml
+index c1c7ce0c..55fd76a1 100644
+--- a/res/layout/miuix_preference_widget_seekbar.xml
++++ b/res/layout/miuix_preference_widget_seekbar.xml
+@@ -7,7 +7,7 @@
+             <TextView android:textAppearance="?android:textAppearanceListItem" android:id="@android:id/title" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+         </LinearLayout>
+         <miuix.preference.UnPressableLinearLayout android:gravity="center_vertical" android:paddingTop="@dimen/miuix_preference_item_seekbar_padding_top" android:paddingBottom="@dimen/miuix_preference_item_seekbar_padding_bottom" android:clipChildren="false" android:clipToPadding="false" android:layout_width="match_parent" android:layout_height="wrap_content">
+-            <miui.widget.SeekBar android:id="@id/seekbar" android:background="@null" android:layout_width="0.0dp" android:layout_height="wrap_content" android:layout_weight="1.0" android:paddingStart="@dimen/miuix_preference_seekbar_padding_horizontal" android:paddingEnd="@dimen/miuix_preference_seekbar_padding_horizontal" />
++            <SeekBar android:id="@id/seekbar" android:background="@null" android:layout_width="0.0dp" android:layout_height="wrap_content" android:layout_weight="1.0" android:paddingStart="@dimen/miuix_preference_seekbar_padding_horizontal" android:paddingEnd="@dimen/miuix_preference_seekbar_padding_horizontal" />
+             <TextView android:textAppearance="?android:textAppearanceListItem" android:ellipsize="marquee" android:gravity="right" android:id="@id/seekbar_value" android:scrollbars="none" android:fadingEdge="horizontal" android:layout_width="0.0dp" android:layout_height="wrap_content" android:singleLine="true" />
+         </miuix.preference.UnPressableLinearLayout>
+     </LinearLayout>
+diff --git a/res/layout/miuix_preference_widget_switch.xml b/res/layout/miuix_preference_widget_switch.xml
+index 1e180c6e..38769c9e 100644
+--- a/res/layout/miuix_preference_widget_switch.xml
++++ b/res/layout/miuix_preference_widget_switch.xml
+@@ -1,3 +1,3 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<miui.widget.SlidingSwitch android:layout_gravity="center" android:id="@android:id/switch_widget" android:focusable="false" android:clickable="false" android:layout_width="wrap_content" android:layout_height="wrap_content"
++<Switch android:layout_gravity="center" android:id="@android:id/switch_widget" android:focusable="false" android:clickable="false" android:layout_width="wrap_content" android:layout_height="wrap_content"
+   xmlns:android="http://schemas.android.com/apk/res/android" />
+diff --git a/res/layout/miuix_preference_widget_switch_compat.xml b/res/layout/miuix_preference_widget_switch_compat.xml
+index 10363723..433a710b 100644
+--- a/res/layout/miuix_preference_widget_switch_compat.xml
++++ b/res/layout/miuix_preference_widget_switch_compat.xml
+@@ -1,3 +1,3 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<miui.widget.SlidingButton android:layout_gravity="center" android:id="@id/switchWidget" android:focusable="false" android:clickable="false" android:layout_width="wrap_content" android:layout_height="wrap_content"
++<Switch android:layout_gravity="center" android:id="@id/switchWidget" android:focusable="false" android:clickable="false" android:layout_width="wrap_content" android:layout_height="wrap_content"
+   xmlns:android="http://schemas.android.com/apk/res/android" />
+diff --git a/res/layout/more_mode_style_settings.xml b/res/layout/more_mode_style_settings.xml
+index eeb97554..d31d869e 100644
+--- a/res/layout/more_mode_style_settings.xml
++++ b/res/layout/more_mode_style_settings.xml
+@@ -6,7 +6,7 @@
+             <VideoView android:layout_gravity="center" android:id="@id/open_type_tab_video" android:layout_width="@dimen/more_mode_settings_video_width" android:layout_height="@dimen/more_mode_settings_video_height" android:alpha="0.0" android:importantForAccessibility="no" />
+             <View android:layout_gravity="center" android:id="@id/tab_cover" android:background="@drawable/video_cover_tab" android:layout_width="@dimen/more_mode_settings_video_width" android:layout_height="@dimen/more_mode_settings_video_height" />
+         </androidx.cardview.widget.CardView>
+-        <RadioButton android:textSize="@dimen/more_mode_settings_title_size" android:textColor="@color/more_mode_style_setting_text_color" android:id="@id/open_type_tab_radio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="@dimen/more_mode_settings_radio_margin_top" android:text="@string/more_mode_style_tab" style="@miui:style/Widget.CompoundButton.RadioButton.Circle" />
++        <RadioButton android:textSize="@dimen/more_mode_settings_title_size" android:textColor="@color/more_mode_style_setting_text_color" android:id="@id/open_type_tab_radio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="@dimen/more_mode_settings_radio_margin_top" android:text="@string/more_mode_style_tab" style="@android:style/Widget.DeviceDefault.CompoundButton.RadioButton" />
+     </LinearLayout>
+     <View android:layout_width="@dimen/more_mode_settings_centre_margin" android:layout_height="match_parent" />
+     <LinearLayout android:gravity="center_horizontal" android:orientation="vertical" android:id="@id/open_type_popup" android:layout_width="0.0dp" android:layout_height="wrap_content" android:layout_weight="1.0">
+@@ -14,6 +14,6 @@
+             <VideoView android:layout_gravity="center" android:id="@id/open_type_popup_video" android:layout_width="@dimen/more_mode_settings_video_width" android:layout_height="@dimen/more_mode_settings_video_height" android:alpha="0.0" android:importantForAccessibility="no" />
+             <View android:layout_gravity="center" android:id="@id/popup_cover" android:background="@drawable/video_cover_popup" android:layout_width="@dimen/more_mode_settings_video_width" android:layout_height="@dimen/more_mode_settings_video_height" />
+         </androidx.cardview.widget.CardView>
+-        <RadioButton android:textSize="@dimen/more_mode_settings_title_size" android:textColor="@color/more_mode_style_setting_text_color" android:id="@id/open_type_popup_radio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="@dimen/more_mode_settings_radio_margin_top" android:text="@string/more_mode_style_popup" style="@miui:style/Widget.CompoundButton.RadioButton.Circle" />
++        <RadioButton android:textSize="@dimen/more_mode_settings_title_size" android:textColor="@color/more_mode_style_setting_text_color" android:id="@id/open_type_popup_radio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="@dimen/more_mode_settings_radio_margin_top" android:text="@string/more_mode_style_popup" style="@android:style/Widget.DeviceDefault.CompoundButton.RadioButton" />
+     </LinearLayout>
+ </LinearLayout>
+diff --git a/res/values/styles.xml b/res/values/styles.xml
+index c69ba500..b8c7dcc2 100644
+--- a/res/values/styles.xml
++++ b/res/values/styles.xml
+@@ -870,7 +870,7 @@
+         <item name="android:textColor">#ffffff</item>
+         <item name="android:singleLine">true</item>
+     </style>
+-    <style name="Compat.TextAppearance" parent="@miui:style/TextAppearance">
++    <style name="Compat.TextAppearance" parent="@android:style/TextAppearance">
+         <item name="android:textStyle">normal</item>
+         <item name="android:textColorHighlight">?android:textColorHighlight</item>
+         <item name="android:textColorHint">?android:textColorHint</item>
+@@ -893,7 +893,7 @@
+         <item name="android:textSize">@dimen/miuix_compat_spinner_text_size_integrated</item>
+         <item name="android:textColor">?integratedSpinnerTextColor</item>
+     </style>
+-    <style name="Compat.Widget.DropdownSelector.Spinner" parent="@miui:style/Widget.DropdownSelector.Spinner">
++    <style name="Compat.Widget.DropdownSelector.Spinner" parent="@android:style/Widget.DeviceDefault.Spinner">
+         <item name="android:layout_marginStart">0.0dp</item>
+     </style>
+     <style name="Compat.Widget.DropdownSelector.Spinner.Integrated" parent="@style/Compat.Widget.DropdownSelector.Spinner">
+@@ -903,7 +903,7 @@
+     <style name="Compat.Widget.Spinner" parent="@android:style/Widget.Spinner">
+         <item name="android:background">@android:color/transparent</item>
+         <item name="android:dropDownSelector">@android:color/transparent</item>
+-        <item name="android:popupBackground">?miui:immersionWindowBackground</item>
++        <item name="android:popupBackground">?android:colorBackgroundFloating</item>
+         <item name="android:dropDownWidth">wrap_content</item>
+         <item name="android:dropDownHeight">@dimen/miuix_compat_list_preferred_item_height_small</item>
+         <item name="android:dropDownHorizontalOffset">0.0dp</item>
+@@ -932,7 +932,7 @@
+         <item name="android:backgroundDimEnabled">true</item>
+         <item name="android:windowTranslucentNavigation">true</item>
+     </style>
+-    <style name="EditAlertDialog" parent="@miui:style/Theme.DayNight.Dialog.Alert">
++    <style name="EditAlertDialog" parent="@android:style/Theme.DeviceDefault.Dialog.Alert">
+         <item name="android:windowSoftInputMode">stateAlwaysVisible</item>
+     </style>
+     <style name="EffectItemText">
+@@ -982,12 +982,6 @@
+         <item name="android:windowActionBar">false</item>
+     </style>
+     <style name="MimojiCheckboxStyle" parent="@android:style/Widget.CompoundButton.CheckBox">
+-        <item name="miui:checkWidgetDisableDrawableBackgroundColor">#fbfbfb</item>
+-        <item name="miui:checkBoxDrawableTouchAnimEnable">false</item>
+-        <item name="miui:radioButtonDrawableTouchAnimEnable">false</item>
+-        <item name="miui:checkWidgetStrokeColor">#e2e2e2</item>
+-        <item name="miui:checkWidgetBackgroundNormalAlpha">255</item>
+-        <item name="miui:checkWidgetStrokeNormalAlpha">255</item>
+     </style>
+     <style name="MimojiText">
+         <item name="android:textSize">@dimen/mimoji_text_size</item>
+@@ -1632,7 +1626,7 @@
+         <item name="windowActionBar">false</item>
+         <item name="windowNoTitle">true</item>
+     </style>
+-    <style name="Theme.Compat.Dark" parent="@miui:style/Theme.Dark">
++    <style name="Theme.Compat.Dark" parent="@android:style/Theme.DeviceDefault">
+         <item name="compatTextColorList">@color/miuix_compat_list_text_dark</item>
+         <item name="compatTextColorListSecondary">@color/miuix_compat_list_secondary_text_dark</item>
+         <item name="integratedSpinnerTextColor">@color/miuix_compat_integrated_spinner_text_color_dark</item>
+@@ -1641,7 +1635,7 @@
+         <item name="spinnerTextColor">@color/miuix_compat_spinner_text_color_dark</item>
+     </style>
+     <style name="Theme.Compat.DayNight" parent="@style/Theme.Compat.Light" />
+-    <style name="Theme.Compat.Light" parent="@miui:style/Theme.Light">
++    <style name="Theme.Compat.Light" parent="@android:style/Theme.DeviceDefault.Light">
+         <item name="compatTextColorList">@color/miuix_compat_list_text_light</item>
+         <item name="compatTextColorListSecondary">@color/miuix_compat_list_secondary_text_light</item>
+         <item name="integratedSpinnerTextColor">@color/miuix_compat_integrated_spinner_text_color_light</item>
+@@ -1656,7 +1650,7 @@
+     <style name="Theme.Compat.Preference.Light" parent="@style/Theme.Compat.Light">
+         <item name="preferenceTheme">@style/V11.PreferenceThemeOverlay.Light</item>
+     </style>
+-    <style name="Theme.VideoCast.AlertActivity" parent="@miui:style/Theme.DayNight.NoTitle">
++    <style name="Theme.VideoCast.AlertActivity" parent="@android:style/Theme.DeviceDefault.DayNight">
+         <item name="android:windowBackground">@android:color/transparent</item>
+         <item name="android:windowFrame">@null</item>
+         <item name="android:windowIsFloating">true</item>
+@@ -1668,8 +1662,8 @@
+         <item name="android:windowActionBar">false</item>
+         <item name="android:windowTranslucentNavigation">true</item>
+     </style>
+-    <style name="Theme.VideoCast.AlertDialog" parent="@miui:style/Theme.DayNight.Dialog.Alert" />
+-    <style name="ThemeCamera" parent="@miui:style/Theme.DayNight">
++    <style name="Theme.VideoCast.AlertDialog" parent="@android:style/Theme.DeviceDefault.Dialog.Alert" />
++    <style name="ThemeCamera" parent="@android:style/Theme.DeviceDefault.DayNight">
+         <item name="android:colorBackground">@android:color/black</item>
+         <item name="android:windowBackground">@android:color/black</item>
+         <item name="android:windowNoTitle">true</item>
+@@ -1679,17 +1673,17 @@
+         <item name="android:listChoiceIndicatorMultiple">@drawable/btn_checkbox_light</item>
+         <item name="android:windowTranslucentStatus">true</item>
+         <item name="android:navigationBarColor">@android:color/transparent</item>
+-        <item name="miui:windowActionBar">false</item>
++        <item name="android:windowActionBar">false</item>
+     </style>
+     <style name="ThemeCameraSettingsMiuiX" parent="@style/Theme.Compat.Preference.DayNight" />
+     <style name="ThemeCustomizationPage" parent="@style/Theme.Compat.Preference.DayNight" />
+-    <style name="ThemeModeEditor" parent="@miui:style/Theme.DayNight">
++    <style name="ThemeModeEditor" parent="@android:style/Theme.DeviceDefault.DayNight">
+         <item name="android:colorBackground">@android:color/black</item>
+         <item name="android:windowBackground">@android:color/black</item>
+         <item name="android:windowNoTitle">true</item>
+         <item name="android:windowContentOverlay">@null</item>
+         <item name="android:navigationBarColor">@android:color/transparent</item>
+-        <item name="miui:windowActionBar">false</item>
++        <item name="android:windowActionBar">false</item>
+     </style>
+     <style name="ThemeOverlay.AppCompat" parent="@style/Base.ThemeOverlay.AppCompat" />
+     <style name="ThemeOverlay.AppCompat.ActionBar" parent="@style/Base.ThemeOverlay.AppCompat.ActionBar" />
+-- 
+2.43.0
+
